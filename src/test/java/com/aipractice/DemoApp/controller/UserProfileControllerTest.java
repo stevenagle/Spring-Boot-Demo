@@ -5,15 +5,17 @@ import com.aipractice.DemoApp.model.UserProfile;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserProfileController.class)
 class UserProfileControllerTest {
@@ -21,7 +23,7 @@ class UserProfileControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private UserProfileService userProfileService;
 
     @Test
@@ -73,7 +75,8 @@ class UserProfileControllerTest {
         when(userProfileService.getUserProfile("3")).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/v1/demo/user/3"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("That user does not exist. Please try again."));
     }
 
     @Test
@@ -81,6 +84,7 @@ class UserProfileControllerTest {
         when(userProfileService.getUserProfile("banana")).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/v1/demo/user/banana"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Only numbers are supported for user lookup."));
     }
 }
