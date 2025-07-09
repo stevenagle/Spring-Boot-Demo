@@ -70,6 +70,8 @@ class UserProfileControllerTest {
                 .andExpect(jsonPath("$.zipCode").value("67890"));
     }
 
+    // Exception Handling Tests
+
     @Test
     void testGetUserProfileNotFound_id3() throws Exception {
         when(userProfileService.getUserProfile("3")).thenReturn(Optional.empty());
