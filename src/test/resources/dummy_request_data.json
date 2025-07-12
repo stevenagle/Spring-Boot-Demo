@@ -1,0 +1,31 @@
+{
+  "valid": {
+    "userName": "ValidUser",
+    "emailAddress": "validuser@demo.com",
+    "streetAddress": "100 Test Lane",
+    "city": "Mockville",
+    "state": "NY",
+    "zipCode": "11111"
+  },
+  "missingUserName": {
+    "emailAddress": "nouser@demo.com",
+    "streetAddress": "101 Test Ave",
+    "city": "Nowhere",
+    "state": "CA",
+    "zipCode": "22222"
+  },
+  "missingEmailAddress": {
+    "userName": "NoEmailUser",
+    "streetAddress": "102 Test Blvd",
+    "city": "Somewhere",
+    "state": "TX",
+    "zipCode": "33333"
+  },
+  "missingZipCode": {
+    "userName": "NoZipUser",
+    "emailAddress": "nozip@demo.com",
+    "streetAddress": "103 Test Rd",
+    "city": "Elsewhere",
+    "state": "WA"
+  }
+}

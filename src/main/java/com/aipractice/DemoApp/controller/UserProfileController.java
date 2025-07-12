@@ -19,7 +19,7 @@ public class UserProfileController {
         this.userProfileService = userProfileService;
     }
 
-    // GET endpoint to fetch a resource
+    // GET endpoint fetches user by id
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserProfile(@PathVariable String id) {
         Optional<UserProfile> profile = userProfileService.getUserProfile(id);
@@ -33,7 +33,7 @@ public class UserProfileController {
                 .orElseThrow(() -> new UserNotFoundException("User ID not found: " + id));
     }
 
-    // POST endpoint to create or process a resource
+    // POST endpoint creates a new user profile
     @PostMapping
     public ResponseEntity<String> createResource(@RequestBody Map<String, Object> payload) {
         // Process the incoming payload
