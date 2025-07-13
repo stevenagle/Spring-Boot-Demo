@@ -1,8 +1,7 @@
 package com.aipractice.DemoApp.controller;
 
-import com.aipractice.DemoApp.exception.InvalidUserIdException;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
-import com.aipractice.DemoApp.model.UserProfile;
+import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.validation.UserProfileValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

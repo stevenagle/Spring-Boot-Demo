@@ -1,6 +1,6 @@
 package com.aipractice.DemoApp.controller;
 
-import com.aipractice.DemoApp.model.UserProfile;
+import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.service.UserProfileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +30,16 @@ class UserProfileControllerTest {
 
     @Test
     void testGetUserProfileSuccess_id1() throws Exception {
-        UserProfile user = new UserProfile(
-                "TestUser1",
-                "testuser@apidemo.com",
-                "1234 Main St",
-                "Anywhereville",
-                "IL",
-                "12345"
-        );
+        UserProfile user = UserProfile.builder()
+                .id(1L)
+                .username("TestUser1")
+                .emailAddress("testuser@apidemo.com")
+                .streetAddress("1234 Main St")
+                .city("Anywhereville")
+                .state("IL")
+                .zipCode("12345")
+                .build();
+
         when(userProfileService.getUserProfile("1")).thenReturn(Optional.of(user));
 
         mockMvc.perform(get("/api/v1/demo/user/1"))
@@ -52,14 +54,16 @@ class UserProfileControllerTest {
 
     @Test
     void testGetUserProfileSuccess_id2() throws Exception {
-        UserProfile user = new UserProfile(
-                "TestUser2",
-                "testuser2@apidemo.com",
-                "5678 Main St",
-                "Somewheretown",
-                "TX",
-                "67890"
-        );
+        UserProfile user = UserProfile.builder()
+                .id(1L)
+                .username("TestUser2")
+                .emailAddress("testuser2@apidemo.com")
+                .streetAddress("5678 Main St")
+                .city("Somewheretown")
+                .state("TX")
+                .zipCode("67890")
+                .build();
+
         when(userProfileService.getUserProfile("2")).thenReturn(Optional.of(user));
 
         mockMvc.perform(get("/api/v1/demo/user/2"))

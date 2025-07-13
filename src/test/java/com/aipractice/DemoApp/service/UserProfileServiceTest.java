@@ -1,6 +1,6 @@
 package com.aipractice.DemoApp.service;
 
-import com.aipractice.DemoApp.model.UserProfile;
+import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.util.JsonTestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

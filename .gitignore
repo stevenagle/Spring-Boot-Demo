@@ -9,6 +9,7 @@ build/
 *.jar
 *.war
 *.ear
+.env
 
 ### Gradle ###
 gradle-app.setting

@@ -1,6 +1,6 @@
 package com.aipractice.DemoApp.service;
 
-import com.aipractice.DemoApp.model.UserProfile;
+import com.aipractice.DemoApp.domain.UserProfile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
@@ -30,15 +30,15 @@ public class UserProfileService {
                 return Optional.empty(); // User not found
             }
 
-            // Build the POJO manually
-            UserProfile profile = new UserProfile(
-                    userNode.path("userName").asText(),
-                    userNode.path("emailAddress").asText(),
-                    userNode.path("streetAddress").asText(),
-                    userNode.path("city").asText(),
-                    userNode.path("state").asText(),
-                    userNode.path("zipCode").asText()
-            );
+            UserProfile profile = UserProfile.builder()
+                    .id(1L)
+                    .username(userNode.path("userName").asText())
+                    .emailAddress(userNode.path("emailAddress").asText())
+                    .streetAddress(userNode.path("streetAddress").asText())
+                    .city(userNode.path("city").asText())
+                    .state(userNode.path("state").asText())
+                    .zipCode(userNode.path("zipCode").asText())
+                    .build();
 
             return Optional.of(profile);
 
