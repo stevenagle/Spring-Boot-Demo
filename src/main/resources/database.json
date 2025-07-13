@@ -1,6 +1,6 @@
 {
   "1" : {
-    "userName" : "TestUser1",
+    "username" : "TestUser1",
     "emailAddress" : "testuser@apidemo.com",
     "streetAddress" : "1234 Main St",
     "city" : "Anywhereville",
@@ -8,7 +8,7 @@
     "zipCode" : "12345"
   },
   "2" : {
-    "userName" : "TestUser2",
+    "username" : "TestUser2",
     "emailAddress" : "testuser2@apidemo.com",
     "streetAddress" : "5678 Main St",
     "city" : "Somewheretown",

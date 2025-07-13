@@ -1,95 +1,58 @@
 package com.aipractice.DemoApp.service;
 
 import com.aipractice.DemoApp.model.UserProfile;
+import com.aipractice.DemoApp.util.JsonTestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserProfileServiceTest {
 
-    private UserProfileService userProfileService;
-
-    @TempDir
-    Path tempDir;
-
-    private File tempJsonFile;
+    private ObjectMapper objectMapper;
+    private UserProfileService service;
 
     @BeforeEach
-    void setUp() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+    void setUp() {
+        objectMapper = new ObjectMapper();
 
-        // Simulate a real database.json file in a temp location
-        String jsonContent = """
-            {
-              "1": {
-                "userName": "TestUser1",
-                "emailAddress": "testuser@apidemo.com",
-                "streetAddress": "1234 Main St",
-                "city": "Anywhereville",
-                "state": "IL",
-                "zipCode": "12345"
-              }
-            }
-        """;
-
-        tempJsonFile = new File(tempDir.toFile(), "database.json");
-        try (FileWriter writer = new FileWriter(tempJsonFile)) {
-            writer.write(jsonContent);
-        }
-
-        // Override ClassPathResource for testing using the temporary file path
-        userProfileService = new UserProfileService(objectMapper) {
+        service = new UserProfileService(objectMapper) {
             @Override
-            public Optional<UserProfile> getUserProfile(String userKey) {
+            public Optional<UserProfile> getUserProfile(String key) {
                 try {
-                    var root = objectMapper.readTree(tempJsonFile);
-                    var userNode = root.path(userKey);
-                    if (userNode.isMissingNode()) return Optional.empty();
-
-                    UserProfile profile = new UserProfile(
-                            userNode.path("userName").asText(),
-                            userNode.path("emailAddress").asText(),
-                            userNode.path("streetAddress").asText(),
-                            userNode.path("city").asText(),
-                            userNode.path("state").asText(),
-                            userNode.path("zipCode").asText()
-                    );
-
-                    return Optional.of(profile);
-
-                } catch (IOException e) {
+                    ObjectNode root = JsonTestUtil.readJsonFromFile("dummy_request_data.json", ObjectNode.class);
+                    if (!root.has(key)) return Optional.empty();
+                    return Optional.of(objectMapper.treeToValue(root.get(key), UserProfile.class));
+                } catch (Exception e) {
                     return Optional.empty();
                 }
             }
         };
     }
 
+    // ✅ GET tests
     @Test
-    void testGetUserProfile_success() {
-        Optional<UserProfile> result = userProfileService.getUserProfile("1");
-
+    void testGetUserProfile_getTest1() {
+        Optional<UserProfile> result = service.getUserProfile("getTest1");
         assertTrue(result.isPresent());
-        UserProfile user = result.get();
-        assertEquals("TestUser1", user.getUsername());
-        assertEquals("testuser@apidemo.com", user.getEmailAddress());
-        assertEquals("1234 Main St", user.getStreetAddress());
-        assertEquals("Anywhereville", user.getCity());
-        assertEquals("IL", user.getState());
-        assertEquals("12345", user.getZipCode());
+        assertEquals("AlphaUser", result.get().getUsername());
     }
 
     @Test
-    void testGetUserProfile_notFound() {
-        Optional<UserProfile> result = userProfileService.getUserProfile("2");
-        assertTrue(result.isEmpty());
+    void testGetUserProfile_getTest2() {
+        Optional<UserProfile> result = service.getUserProfile("getTest2");
+        assertTrue(result.isPresent());
+        assertEquals("BetaUser", result.get().getUsername());
+    }
+
+    @Test
+    void testGetUserProfile_getTest3() {
+        Optional<UserProfile> result = service.getUserProfile("getTest3");
+        assertTrue(result.isPresent());
+        assertEquals("GammaUser", result.get().getUsername());
     }
 }

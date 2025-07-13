@@ -1,10 +1,12 @@
 package com.aipractice.DemoApp.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserProfile {
 
     private String username;
@@ -13,15 +15,6 @@ public class UserProfile {
     private String city;
     private String state;
     private String zipCode;
-
-    public UserProfile(String username, String emailAddress, String streetAddress, String city, String state, String zipCode) {
-        this.username = username;
-        this.emailAddress = emailAddress;
-        this.streetAddress = streetAddress;
-        this.city = city;
-        this.state = state;
-        this.zipCode = zipCode;
-    }
 
     @Override
     public String toString() {
@@ -34,4 +27,6 @@ public class UserProfile {
                 ", zipCode='" + zipCode + '\'' +
                 '}';
     }
+
+
 }

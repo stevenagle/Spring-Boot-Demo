@@ -2,6 +2,8 @@ package com.aipractice.DemoApp.controller;
 
 import com.aipractice.DemoApp.model.UserProfile;
 import com.aipractice.DemoApp.service.UserProfileService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -92,12 +94,11 @@ class UserProfileControllerTest {
                 .andExpect(content().string("Only numbers are supported for user lookup."));
     }
 
-    // POST tests
+    // POST tests - TODO refactor these tests because they feel hacky and brittle
 
     private static final String VALID_USER_JSON = """
         {
-          "userId": "3",
-          "userName": "TestUser3",
+          "username": "TestUser3",
           "emailAddress": "testuser3@apidemo.com",
           "streetAddress": "7890 Elm St",
           "city": "Newtown",
@@ -117,12 +118,12 @@ class UserProfileControllerTest {
 
     @Test
     void testCreateUserProfile_missingUserName() throws Exception {
-        String json = VALID_USER_JSON.replace("\"userName\": \"TestUser3\",", "");
+        String json = VALID_USER_JSON.replace("\"username\": \"TestUser3\",", "");
         mockMvc.perform(post(URI.create("/api/v1/demo"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Missing required field: userName"));
+                .andExpect(content().string("Missing required field: username"));
     }
 
     @Test
@@ -137,7 +138,7 @@ class UserProfileControllerTest {
 
     @Test
     void testCreateUserProfile_missingZipCode() throws Exception {
-        String json = VALID_USER_JSON.replace("\"zipCode\": \"90210\"", "");
+        String json = VALID_USER_JSON.replace("\"zipCode\": \"90210\"", "").replace("\"state\": \"CA\",", "\"state\": \"CA\"");
         mockMvc.perform(post(URI.create("/api/v1/demo"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))

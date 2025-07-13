@@ -1,31 +1,34 @@
 {
+  "getTest1": {
+    "username": "AlphaUser",
+    "emailAddress": "alpha@demo.com",
+    "streetAddress": "100 Alpha St",
+    "city": "Alphaville",
+    "state": "NY",
+    "zipCode": "11111"
+  },
+  "getTest2": {
+    "username": "BetaUser",
+    "emailAddress": "beta@demo.com",
+    "streetAddress": "200 Beta Ave",
+    "city": "Betatown",
+    "state": "CA",
+    "zipCode": "22222"
+  },
+  "getTest3": {
+    "username": "GammaUser",
+    "emailAddress": "gamma@demo.com",
+    "streetAddress": "300 Gamma Blvd",
+    "city": "Gammacity",
+    "state": "WA",
+    "zipCode": "33333"
+  },
   "valid": {
-    "userName": "ValidUser",
+    "username": "ValidUser",
     "emailAddress": "validuser@demo.com",
     "streetAddress": "100 Test Lane",
     "city": "Mockville",
     "state": "NY",
     "zipCode": "11111"
-  },
-  "missingUserName": {
-    "emailAddress": "nouser@demo.com",
-    "streetAddress": "101 Test Ave",
-    "city": "Nowhere",
-    "state": "CA",
-    "zipCode": "22222"
-  },
-  "missingEmailAddress": {
-    "userName": "NoEmailUser",
-    "streetAddress": "102 Test Blvd",
-    "city": "Somewhere",
-    "state": "TX",
-    "zipCode": "33333"
-  },
-  "missingZipCode": {
-    "userName": "NoZipUser",
-    "emailAddress": "nozip@demo.com",
-    "streetAddress": "103 Test Rd",
-    "city": "Elsewhere",
-    "state": "WA"
   }
 }

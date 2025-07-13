@@ -3,6 +3,7 @@ package com.aipractice.DemoApp.controller;
 import com.aipractice.DemoApp.exception.InvalidUserIdException;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.model.UserProfile;
+import com.aipractice.DemoApp.validation.UserProfileValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.aipractice.DemoApp.service.UserProfileService;
@@ -35,9 +36,13 @@ public class UserProfileController {
 
     // POST endpoint creates a new user profile
     @PostMapping
-    public ResponseEntity<String> createResource(@RequestBody Map<String, Object> payload) {
-        // Process the incoming payload
-        String name = payload.getOrDefault("name", "Unnamed").toString();
-        return ResponseEntity.ok("Resource '" + name + "' created successfully.");
+    public ResponseEntity<String> createResource(@RequestBody Map<String, String> request) {
+        // Shoddy temp validation, will leverage spring validation in subsequent iterations when I add a real datasource back-end
+        try {
+            UserProfileValidator.validateCreateRequest(request);
+            return ResponseEntity.ok("User profile created successfully.");
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 }
