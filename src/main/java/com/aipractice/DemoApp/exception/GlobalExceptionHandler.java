@@ -10,7 +10,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidUserIdException.class)
     public ResponseEntity<String> handleInvalidUserId(InvalidUserIdException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Only numbers are supported for user lookup.");
+                .body("Only numbers are supported for user lookup & should be less than 12 digits.");
     }
 
     @ExceptionHandler(UserNotFoundException.class)

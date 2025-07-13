@@ -23,11 +23,8 @@ public class UserProfileController {
     // GET endpoint fetches user by id
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserProfile(@PathVariable String id) {
+        UserProfileValidator.validateGetRequest(id);
         Optional<UserProfile> profile = userProfileService.getUserProfile(id);
-        // TODO Temporary validation in controller method - extract this out later
-        if (!id.matches("\\d+")) {
-            throw new InvalidUserIdException("Non-numeric ID supplied");
-        }
 
         return userProfileService.getUserProfile(id)
                 .map(ResponseEntity::ok)

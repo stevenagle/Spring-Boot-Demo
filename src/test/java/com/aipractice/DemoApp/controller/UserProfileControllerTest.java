@@ -2,8 +2,6 @@ package com.aipractice.DemoApp.controller;
 
 import com.aipractice.DemoApp.model.UserProfile;
 import com.aipractice.DemoApp.service.UserProfileService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -87,11 +85,23 @@ class UserProfileControllerTest {
 
     @Test
     void testGetUserProfileInvalidWordId() throws Exception {
-        when(userProfileService.getUserProfile("banana")).thenReturn(Optional.empty());
-
         mockMvc.perform(get("/api/v1/demo/user/banana"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Only numbers are supported for user lookup."));
+                .andExpect(content().string("Only numbers are supported for user lookup & should be less than 12 digits."));
+    }
+
+    @Test
+    void testGetUserProfileInvalidId_SpecialChars() throws Exception {
+        mockMvc.perform(get("/api/v1/demo/user/123!"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Only numbers are supported for user lookup & should be less than 12 digits."));
+    }
+
+    @Test
+    void testGetUserProfileInvalidId_TooLong() throws Exception {
+        mockMvc.perform(get("/api/v1/demo/user/12345678901234"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Only numbers are supported for user lookup & should be less than 12 digits."));
     }
 
     // POST tests - TODO refactor these tests because they feel hacky and brittle
