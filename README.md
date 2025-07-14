@@ -14,9 +14,11 @@ Build something clean & functional via TDD alongside Copilot. Constant iteration
 
 ## In-progress:
 - Conceptualizing how I want to streamline validation (currently using a somewhat hacky validator class during bootstrapping)
+- Multi-field PATCH updates
 - Upcoming DELETE functionality
 - Ongoing debate on if I want to save this as an easy skeleton reference for a basic Spring Boot CRUD app or extend it into something resembling an actual product
 - Build out Thymeleaf UI pages to wire a front-end for these operations
+- Add security features
 
 
 ## Done
@@ -29,3 +31,5 @@ Build something clean & functional via TDD alongside Copilot. Constant iteration
 ✅ PATCH functionality takes a single value update
 
 ✅ All implemented functionality is tested
+
+✅ Basic back-end input validation
