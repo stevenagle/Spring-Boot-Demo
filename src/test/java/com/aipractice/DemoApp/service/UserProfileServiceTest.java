@@ -148,4 +148,30 @@ class UserProfileServiceTest {
 
         assertEquals("Field 'unknownField' cannot be updated.", ex.getMessage());
     }
+
+    // DELETE tests
+
+    @Test
+    void testDeleteUserProfile_shouldRemoveUser() {
+        UserProfileService service = new UserProfileService(repository);
+
+        // Confirm user exists
+        Optional<UserProfile> before = repository.findById(1L);
+        assertTrue(before.isPresent());
+
+        ResponseEntity<?> response = service.deleteUserProfile("1");
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+        Optional<UserProfile> after = repository.findById(1L);
+        assertTrue(after.isEmpty());
+    }
+
+    @Test
+    void testDeleteUserProfile_nonExistentId_shouldThrowException() {
+        UserProfileService service = new UserProfileService(repository);
+
+        assertThrows(UserNotFoundException.class, () ->
+                service.deleteUserProfile("999")
+        );
+    }
 }

@@ -95,4 +95,26 @@ public class UserProfileService {
                     .body("Server error occurred while updating user profile.");
         }
     }
+
+    public ResponseEntity<?> deleteUserProfile(String userId) {
+        try {
+            Long id = Long.parseLong(userId);
+            Optional<UserProfile> user = repository.findById(id);
+
+            if (user.isEmpty()) {
+                throw new UserNotFoundException("No user found with ID " + id);
+            }
+
+            repository.deleteById(id);
+            return ResponseEntity.noContent().build();
+
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("User ID should be a numeric value.");
+        } catch (UserNotFoundException ex) {
+            throw ex; // Let GlobalExceptionHandler handle this
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Server error occurred while deleting user profile.");
+        }
+    }
 }

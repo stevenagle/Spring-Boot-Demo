@@ -33,7 +33,7 @@ public class UserProfileValidator {
         }
     }
 
-    public static void validateGetRequest(String id) throws InvalidUserIdException {
+    public static void validateUserId(String id) throws InvalidUserIdException {
         if (!id.matches("^\\d+$") || id.length() > 12) {
             throw new InvalidUserIdException("User ID should be numbers only.");
         }

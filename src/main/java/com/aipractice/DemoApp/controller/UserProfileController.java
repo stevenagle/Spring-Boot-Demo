@@ -20,18 +20,18 @@ public class UserProfileController {
         this.userProfileService = userProfileService;
     }
 
-    // GET endpoint fetches user by id
+    // GET route fetches a single user by id
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserProfile(@PathVariable String id) {
         try {
-            UserProfileValidator.validateGetRequest(id);
+            UserProfileValidator.validateUserId(id);
             return userProfileService.getUserProfile(id);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
-    // POST endpoint creates a new user profile
+    // POST route creates a new user profile
     @PostMapping("/users")
     public ResponseEntity<String> createUserProfile(@RequestBody Map<String, String> request) {
         try {
@@ -42,12 +42,23 @@ public class UserProfileController {
         }
     }
 
-    //PATCH endpoint allows updating a single user profile value
+    //PATCH route allows updating a single user profile value
     @PatchMapping("/users/{id}")
     public ResponseEntity<?> updateUserProfile(@PathVariable String id, @RequestBody Map<String,String> request) {
         try {
             UserProfileValidator.validatePatchRequest(request);
             return userProfileService.updateUserProfile(id, request);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    // DELETE route deletes a user profile record
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUserProfile(@PathVariable String id) {
+        try {
+            UserProfileValidator.validateUserId(id);
+            return userProfileService.deleteUserProfile(id);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }

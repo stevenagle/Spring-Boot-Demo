@@ -1,6 +1,7 @@
 package com.aipractice.DemoApp.controller;
 
 import com.aipractice.DemoApp.domain.UserProfile;
+import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.service.UserProfileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,7 @@ import java.net.URI;
 import java.util.Map;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserProfileController.class)
@@ -30,39 +29,39 @@ class UserProfileControllerTest {
     private UserProfileService userProfileService;
 
     private static final String VALID_USER_JSON = """
-        {
-          "username": "TestUser3",
-          "emailAddress": "testuser3@apidemo.com",
-          "streetAddress": "7890 Elm St",
-          "city": "Newtown",
-          "state": "CA",
-          "zipCode": "90210"
-        }
-        """;
+            {
+              "username": "TestUser3",
+              "emailAddress": "testuser3@apidemo.com",
+              "streetAddress": "7890 Elm St",
+              "city": "Newtown",
+              "state": "CA",
+              "zipCode": "90210"
+            }
+            """;
 
     private static final String VALID_PATCH_BODY_ADDRESS_JSON = """
-        {
-          "op": "replace",
-          "path": "streetAddress",
-          "value": "0987 Main St"
-        }
-        """;
+            {
+              "op": "replace",
+              "path": "streetAddress",
+              "value": "0987 Main St"
+            }
+            """;
 
     private static final String VALID_PATCH_BODY_CITY_JSON = """
-        {
-          "op": "replace",
-          "path": "state",
-          "value": "NE"
-        }
-        """;
+            {
+              "op": "replace",
+              "path": "state",
+              "value": "NE"
+            }
+            """;
 
     private static final String INVALID_PATCH_BODY = """
-        {
-          "op": "replace",
-          "path": "fakeField",
-          "value": "oops"
-        }
-        """;
+            {
+              "op": "replace",
+              "path": "fakeField",
+              "value": "oops"
+            }
+            """;
 
     @Test
     void testGetUserProfileSuccess_id1() throws Exception {
@@ -195,5 +194,34 @@ class UserProfileControllerTest {
                         .content(INVALID_PATCH_BODY))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Field 'fakeField' cannot be updated. Allowed fields: username, emailAddress, streetAddress, city, state, zipCode"));
+    }
+
+    // DELETE tests
+
+    @Test
+    void testDeleteUserProfile_shouldReturn204WhenSuccessful() throws Exception {
+        when(userProfileService.deleteUserProfile("1"))
+                .thenReturn(ResponseEntity.noContent().build());
+
+        mockMvc.perform(delete("/api/v1/demo/users/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testDeleteUserProfile_userNotFound_shouldReturn404() throws Exception {
+        when(userProfileService.deleteUserProfile("999"))
+                .thenThrow(new UserNotFoundException("User not found"));
+
+        mockMvc.perform(delete("/api/v1/demo/users/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("That user does not exist. Please try again."));
+    }
+
+    @Test
+    void testDeleteUserProfile_invalidIdFormat_shouldReturn400() throws Exception {
+        mockMvc.perform(delete("/api/v1/demo/users/abc123"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Only numbers are supported for user lookup & should be less than 12 digits."));
+
     }
 }
