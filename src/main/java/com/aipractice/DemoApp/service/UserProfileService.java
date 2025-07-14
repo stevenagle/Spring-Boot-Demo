@@ -1,52 +1,57 @@
 package com.aipractice.DemoApp.service;
 
 import com.aipractice.DemoApp.domain.UserProfile;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.ClassPathResource;
+import com.aipractice.DemoApp.repository.UserProfileRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class UserProfileService {
 
-    private final ObjectMapper objectMapper;
+    private final UserProfileRepository repository;
 
-    public UserProfileService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    public UserProfileService(UserProfileRepository repository) {
+        this.repository = repository;
     }
 
-    public Optional<UserProfile> getUserProfile(String userKey) {
+    public ResponseEntity<?> getUserProfile(String idString) {
         try {
-            // Load the JSON file from classpath
-            JsonNode root = objectMapper.readTree(new ClassPathResource("database.json").getInputStream());
+            Long id = Long.parseLong(idString);
 
-            // Get the specified user node
-            JsonNode userNode = root.path(userKey);
+            return repository.findById(id)
+                    .<ResponseEntity<?>>map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body("That user does not exist. Please try again."));
 
-            if (userNode.isMissingNode()) {
-                return Optional.empty(); // User not found
-            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Only numbers are supported for user lookup & should be less than 12 digits.");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("A server error occurred while retrieving the user profile.");
+        }
+    }
 
-            UserProfile profile = UserProfile.builder()
-                    .id(1L)
-                    .username(userNode.path("userName").asText())
-                    .emailAddress(userNode.path("emailAddress").asText())
-                    .streetAddress(userNode.path("streetAddress").asText())
-                    .city(userNode.path("city").asText())
-                    .state(userNode.path("state").asText())
-                    .zipCode(userNode.path("zipCode").asText())
-                    .build();
+    public ResponseEntity<String> createUserProfile(Map<String, String> payload) {
+        UserProfile user = UserProfile.builder()
+                .username(payload.get("username"))
+                .emailAddress(payload.get("emailAddress"))
+                .streetAddress(payload.get("streetAddress"))
+                .city(payload.get("city"))
+                .state(payload.get("state"))
+                .zipCode(payload.get("zipCode"))
+                .build();
 
-            return Optional.of(profile);
-
-        } catch (IOException e) {
-            e.printStackTrace(); // Consider logging in production
-            return Optional.empty();
+        try {
+            UserProfile saved = repository.save(user);
+            return ResponseEntity.ok("New user ID " + saved.getId() + " created successfully.");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while creating the user profile. Please try again later.");
         }
     }
 }
-
-

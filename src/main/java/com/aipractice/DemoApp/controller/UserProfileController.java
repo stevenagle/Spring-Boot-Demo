@@ -20,23 +20,20 @@ public class UserProfileController {
     }
 
     // GET endpoint fetches user by id
-    @GetMapping("/user/{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserProfile(@PathVariable String id) {
         UserProfileValidator.validateGetRequest(id);
-        Optional<UserProfile> profile = userProfileService.getUserProfile(id);
 
-        return userProfileService.getUserProfile(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new UserNotFoundException("User ID not found: " + id));
+        return userProfileService.getUserProfile(id);
     }
 
     // POST endpoint creates a new user profile
-    @PostMapping
+    @PostMapping("/users")
     public ResponseEntity<String> createResource(@RequestBody Map<String, String> request) {
         // Shoddy temp validation, will leverage spring validation in subsequent iterations when I add a real datasource back-end
         try {
             UserProfileValidator.validateCreateRequest(request);
-            return ResponseEntity.ok("User profile created successfully.");
+            return userProfileService.createUserProfile(request);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
