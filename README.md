@@ -1,6 +1,6 @@
 ## Project Overview
 
-Starting with a pretty generic Spring Boot REST API build-out and slowly expanding into functional CRUD app. Using Copilot to save time but it's a little overconfident sometimes.
+Project started using Spring Initializr; a blank-canvas, generic Spring Boot project slowly expanding into a functional CRUD API app. Using Copilot to save time but it's a little overconfident sometimes. That said, none of this project has been copied in any way from another repo or user.
 
 ### Goals
 
