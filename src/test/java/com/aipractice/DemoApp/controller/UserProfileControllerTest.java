@@ -1,6 +1,7 @@
 package com.aipractice.DemoApp.controller;
 
 import com.aipractice.DemoApp.domain.UserProfile;
+import com.aipractice.DemoApp.dto.UserProfilePatchDTO;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.service.UserProfileService;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.net.URI;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -105,9 +108,9 @@ class UserProfileControllerTest {
                 .thenAnswer(x -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Only numbers are supported for user lookup & should be less than 12 digits."));
 
-        mockMvc.perform(get("/api/v1/demo/users/banana"))
+        mockMvc.perform(get("/api/v1/demo/users/abc123"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Only numbers are supported for user lookup & should be less than 12 digits."));
+                .andExpect(content().string(containsString("User ID must be numeric and less than 12 digits.")));
     }
 
     @Test
@@ -142,13 +145,9 @@ class UserProfileControllerTest {
 
     @Test
     void testUpdateUserProfile_shouldReturn200WhenSuccessful() throws Exception {
-        Map<String, String> updatePayload = Map.of(
-                "op", "replace",
-                "path", "streetAddress",
-                "value", "0987 Main St"
-        );
+        UserProfilePatchDTO patchDto = new UserProfilePatchDTO("replace", "streetAddress", "0987 Main St");
 
-        when(userProfileService.updateUserProfile("10", updatePayload))
+        when(userProfileService.updateUserProfile(eq("10"), eq(patchDto)))
                 .thenAnswer(x -> ResponseEntity.ok("streetAddress updated for user ID 10"));
 
         mockMvc.perform(patch("/api/v1/demo/users/10")
@@ -160,13 +159,9 @@ class UserProfileControllerTest {
 
     @Test
     void testUpdateUserProfile_userNotFound_shouldReturn404() throws Exception {
-        Map<String, String> updatePayload = Map.of(
-                "op", "replace",
-                "path", "state",
-                "value", "NE"
-        );
+        UserProfilePatchDTO patchDto = new UserProfilePatchDTO("replace", "state", "NE");
 
-        when(userProfileService.updateUserProfile("999", updatePayload))
+        when(userProfileService.updateUserProfile(eq("999"), eq(patchDto)))
                 .thenAnswer(x -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("No user found with ID 999"));
 
@@ -179,21 +174,20 @@ class UserProfileControllerTest {
 
     @Test
     void testUpdateUserProfile_invalidField_shouldReturn400() throws Exception {
-        Map<String, String> updatePayload = Map.of(
-                "op", "replace",
-                "path", "fakeField",
-                "value", "oops"
-        );
+        UserProfilePatchDTO patchDto = new UserProfilePatchDTO("replace", "fakeField", "oops");
 
-        when(userProfileService.updateUserProfile("1", updatePayload))
+        when(userProfileService.updateUserProfile(eq("1"), eq(patchDto)))
                 .thenAnswer(x -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Field 'fakeField' cannot be updated."));
+                        .body("Field 'fakeField' cannot be updated. Allowed fields: username, emailAddress, streetAddress, city, state, zipCode"));
 
         mockMvc.perform(patch("/api/v1/demo/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(INVALID_PATCH_BODY))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Field 'fakeField' cannot be updated. Allowed fields: username, emailAddress, streetAddress, city, state, zipCode"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.errors[0]").value("path: Invalid field for patching."));
+
     }
 
     // DELETE tests

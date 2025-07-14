@@ -1,9 +1,12 @@
 package com.aipractice.DemoApp.controller;
 
+import com.aipractice.DemoApp.dto.UserProfilePatchDTO;
 import com.aipractice.DemoApp.exception.InvalidUpdateException;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.validation.UserProfileValidator;
+import com.aipractice.DemoApp.validation.ValidUserId;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.aipractice.DemoApp.service.UserProfileService;
@@ -22,7 +25,7 @@ public class UserProfileController {
 
     // GET route fetches a single user by id
     @GetMapping("/users/{id}")
-    public ResponseEntity<?> getUserProfile(@PathVariable String id) {
+    public ResponseEntity<?> getUserProfile(@ValidUserId @PathVariable String id) {
         try {
             UserProfileValidator.validateUserId(id);
             return userProfileService.getUserProfile(id);
@@ -44,9 +47,8 @@ public class UserProfileController {
 
     //PATCH route allows updating a single user profile value
     @PatchMapping("/users/{id}")
-    public ResponseEntity<?> updateUserProfile(@PathVariable String id, @RequestBody Map<String,String> request) {
+    public ResponseEntity<?> updateUserProfile(@ValidUserId @PathVariable String id, @RequestBody @Valid UserProfilePatchDTO request) {
         try {
-            UserProfileValidator.validatePatchRequest(request);
             return userProfileService.updateUserProfile(id, request);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());

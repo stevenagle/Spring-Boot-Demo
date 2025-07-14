@@ -1,6 +1,7 @@
 package com.aipractice.DemoApp.service;
 
 import com.aipractice.DemoApp.domain.UserProfile;
+import com.aipractice.DemoApp.dto.UserProfilePatchDTO;
 import com.aipractice.DemoApp.exception.InvalidUpdateException;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.repository.UserProfileRepository;
@@ -91,13 +92,9 @@ class UserProfileServiceTest {
     void testUpdateUserProfile_shouldUpdateField(String path, String value) {
         UserProfileService service = new UserProfileService(repository);
 
-        Map<String, String> payload = Map.of(
-                "op", "replace",
-                "path", path,
-                "value", value
-        );
+        UserProfilePatchDTO request = new UserProfilePatchDTO("replace", path, value);
 
-        ResponseEntity<?> response = service.updateUserProfile("1", payload);
+        ResponseEntity<?> response = service.updateUserProfile("1", request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(path + " updated for user ID 1", response.getBody());
@@ -120,11 +117,7 @@ class UserProfileServiceTest {
     void testUpdateUserProfile_nonExistentId_shouldReturn404() {
         UserProfileService service = new UserProfileService(repository);
 
-        Map<String, String> updatePayload = Map.of(
-                "op", "replace",
-                "path", "city",
-                "value", "Ghosttown"
-        );
+        UserProfilePatchDTO updatePayload = new UserProfilePatchDTO("replace", "city", "Ghosttown");
 
         UserNotFoundException ex = assertThrows(UserNotFoundException.class, () ->
                 service.updateUserProfile("999", updatePayload)
@@ -136,11 +129,7 @@ class UserProfileServiceTest {
     void testUpdateUserProfile_invalidField_shouldThrowInvalidUpdateException() {
         UserProfileService service = new UserProfileService(repository);
 
-        Map<String, String> updatePayload = Map.of(
-                "op", "replace",
-                "path", "unknownField",
-                "value", "SomeValue"
-        );
+        UserProfilePatchDTO updatePayload = new UserProfilePatchDTO("replace", "unknownField", "SomeValue");
 
         InvalidUpdateException ex = assertThrows(InvalidUpdateException.class, () ->
                 service.updateUserProfile("1", updatePayload)

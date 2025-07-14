@@ -1,8 +1,13 @@
 package com.aipractice.DemoApp.exception;
 
+import com.aipractice.DemoApp.validation.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,6 +28,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInvalidUpdate(InvalidUpdateException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ValidationErrorResponse> handleValidationError(MethodArgumentNotValidException ex) {
+        List<String> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .toList();
+
+        return ResponseEntity.badRequest()
+                .body(new ValidationErrorResponse("Validation failure", errors));
     }
 }
 

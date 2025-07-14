@@ -1,6 +1,7 @@
 package com.aipractice.DemoApp.service;
 
 import com.aipractice.DemoApp.domain.UserProfile;
+import com.aipractice.DemoApp.dto.UserProfilePatchDTO;
 import com.aipractice.DemoApp.exception.InvalidUpdateException;
 import com.aipractice.DemoApp.exception.InvalidUserIdException;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
@@ -58,7 +59,7 @@ public class UserProfileService {
         }
     }
 
-    public ResponseEntity<?> updateUserProfile(String userId, Map<String, String> payload) {
+    public ResponseEntity<?> updateUserProfile(String userId, UserProfilePatchDTO payload) {
         try {
             Long id = Long.parseLong(userId);
             Optional<UserProfile> existingUserOpt = repository.findById(id);
@@ -68,8 +69,8 @@ public class UserProfileService {
             }
 
             // Extract update info
-            String field = payload.get("path");
-            String newValue = payload.get("value");
+            String field = payload.path();
+            String newValue = payload.value();
             UserProfile user = existingUserOpt.get();
 
             // Apply update
