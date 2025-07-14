@@ -1,5 +1,6 @@
 package com.aipractice.DemoApp.controller;
 
+import com.aipractice.DemoApp.exception.InvalidUpdateException;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.validation.UserProfileValidator;
@@ -22,18 +23,31 @@ public class UserProfileController {
     // GET endpoint fetches user by id
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserProfile(@PathVariable String id) {
-        UserProfileValidator.validateGetRequest(id);
-
-        return userProfileService.getUserProfile(id);
+        try {
+            UserProfileValidator.validateGetRequest(id);
+            return userProfileService.getUserProfile(id);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // POST endpoint creates a new user profile
     @PostMapping("/users")
-    public ResponseEntity<String> createResource(@RequestBody Map<String, String> request) {
-        // Shoddy temp validation, will leverage spring validation in subsequent iterations when I add a real datasource back-end
+    public ResponseEntity<String> createUserProfile(@RequestBody Map<String, String> request) {
         try {
             UserProfileValidator.validateCreateRequest(request);
             return userProfileService.createUserProfile(request);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    //PATCH endpoint allows updating a single user profile value
+    @PatchMapping("/users/{id}")
+    public ResponseEntity<?> updateUserProfile(@PathVariable String id, @RequestBody Map<String,String> request) {
+        try {
+            UserProfileValidator.validatePatchRequest(request);
+            return userProfileService.updateUserProfile(id, request);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }

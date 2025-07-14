@@ -17,6 +17,7 @@ import java.util.Map;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserProfileController.class)
@@ -36,6 +37,30 @@ class UserProfileControllerTest {
           "city": "Newtown",
           "state": "CA",
           "zipCode": "90210"
+        }
+        """;
+
+    private static final String VALID_PATCH_BODY_ADDRESS_JSON = """
+        {
+          "op": "replace",
+          "path": "streetAddress",
+          "value": "0987 Main St"
+        }
+        """;
+
+    private static final String VALID_PATCH_BODY_CITY_JSON = """
+        {
+          "op": "replace",
+          "path": "state",
+          "value": "NE"
+        }
+        """;
+
+    private static final String INVALID_PATCH_BODY = """
+        {
+          "op": "replace",
+          "path": "fakeField",
+          "value": "oops"
         }
         """;
 
@@ -112,5 +137,63 @@ class UserProfileControllerTest {
                         .content(json))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Missing required field: username"));
+    }
+
+    // PATCH tests
+
+    @Test
+    void testUpdateUserProfile_shouldReturn200WhenSuccessful() throws Exception {
+        Map<String, String> updatePayload = Map.of(
+                "op", "replace",
+                "path", "streetAddress",
+                "value", "0987 Main St"
+        );
+
+        when(userProfileService.updateUserProfile("10", updatePayload))
+                .thenAnswer(x -> ResponseEntity.ok("streetAddress updated for user ID 10"));
+
+        mockMvc.perform(patch("/api/v1/demo/users/10")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_PATCH_BODY_ADDRESS_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("streetAddress updated for user ID 10"));
+    }
+
+    @Test
+    void testUpdateUserProfile_userNotFound_shouldReturn404() throws Exception {
+        Map<String, String> updatePayload = Map.of(
+                "op", "replace",
+                "path", "state",
+                "value", "NE"
+        );
+
+        when(userProfileService.updateUserProfile("999", updatePayload))
+                .thenAnswer(x -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No user found with ID 999"));
+
+        mockMvc.perform(patch("/api/v1/demo/users/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_PATCH_BODY_CITY_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("No user found with ID 999"));
+    }
+
+    @Test
+    void testUpdateUserProfile_invalidField_shouldReturn400() throws Exception {
+        Map<String, String> updatePayload = Map.of(
+                "op", "replace",
+                "path", "fakeField",
+                "value", "oops"
+        );
+
+        when(userProfileService.updateUserProfile("1", updatePayload))
+                .thenAnswer(x -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Field 'fakeField' cannot be updated."));
+
+        mockMvc.perform(patch("/api/v1/demo/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(INVALID_PATCH_BODY))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Field 'fakeField' cannot be updated. Allowed fields: username, emailAddress, streetAddress, city, state, zipCode"));
     }
 }

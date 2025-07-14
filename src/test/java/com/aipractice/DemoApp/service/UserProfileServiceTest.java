@@ -1,14 +1,19 @@
 package com.aipractice.DemoApp.service;
 
 import com.aipractice.DemoApp.domain.UserProfile;
+import com.aipractice.DemoApp.exception.InvalidUpdateException;
+import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.repository.UserProfileRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -70,5 +75,77 @@ class UserProfileServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().startsWith("New user ID"));
         assertTrue(response.getBody().contains("created successfully."));
+    }
+
+    // PATCH tests
+
+    @ParameterizedTest
+    @CsvSource({
+            "username, UpdatedUser001",
+            "emailAddress, updated@example.com",
+            "streetAddress, 0987 Main St",
+            "city, Gotham",
+            "state, NY",
+            "zipCode, 99999"
+    })
+    void testUpdateUserProfile_shouldUpdateField(String path, String value) {
+        UserProfileService service = new UserProfileService(repository);
+
+        Map<String, String> payload = Map.of(
+                "op", "replace",
+                "path", path,
+                "value", value
+        );
+
+        ResponseEntity<?> response = service.updateUserProfile("1", payload);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(path + " updated for user ID 1", response.getBody());
+
+        Optional<UserProfile> updated = repository.findById(1L);
+        assertTrue(updated.isPresent());
+
+        UserProfile user = updated.get();
+        switch (path) {
+            case "username" -> assertEquals(value, user.getUsername());
+            case "emailAddress" -> assertEquals(value, user.getEmailAddress());
+            case "streetAddress" -> assertEquals(value, user.getStreetAddress());
+            case "city" -> assertEquals(value, user.getCity());
+            case "state" -> assertEquals(value, user.getState());
+            case "zipCode" -> assertEquals(value, user.getZipCode());
+        }
+    }
+
+    @Test
+    void testUpdateUserProfile_nonExistentId_shouldReturn404() {
+        UserProfileService service = new UserProfileService(repository);
+
+        Map<String, String> updatePayload = Map.of(
+                "op", "replace",
+                "path", "city",
+                "value", "Ghosttown"
+        );
+
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () ->
+                service.updateUserProfile("999", updatePayload)
+        );
+        assertEquals("No user found with ID 999", ex.getMessage());
+    }
+
+    @Test
+    void testUpdateUserProfile_invalidField_shouldThrowInvalidUpdateException() {
+        UserProfileService service = new UserProfileService(repository);
+
+        Map<String, String> updatePayload = Map.of(
+                "op", "replace",
+                "path", "unknownField",
+                "value", "SomeValue"
+        );
+
+        InvalidUpdateException ex = assertThrows(InvalidUpdateException.class, () ->
+                service.updateUserProfile("1", updatePayload)
+        );
+
+        assertEquals("Field 'unknownField' cannot be updated.", ex.getMessage());
     }
 }

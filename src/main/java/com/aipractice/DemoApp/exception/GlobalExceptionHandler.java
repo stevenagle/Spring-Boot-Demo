@@ -18,5 +18,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body("That user does not exist. Please try again.");
     }
+
+    @ExceptionHandler(InvalidUpdateException.class)
+    public ResponseEntity<String> handleInvalidUpdate(InvalidUpdateException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
 }
 
