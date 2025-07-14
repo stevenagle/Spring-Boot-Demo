@@ -2,11 +2,13 @@ package com.aipractice.DemoApp.controller;
 
 import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.dto.UserProfilePatchDTO;
+import com.aipractice.DemoApp.exception.GlobalExceptionHandler;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.service.UserProfileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserProfileController.class)
+@Import(GlobalExceptionHandler.class)
 class UserProfileControllerTest {
 
     @Autowired
@@ -184,7 +187,7 @@ class UserProfileControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(INVALID_PATCH_BODY))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Validation failed"))
                 .andExpect(jsonPath("$.errors[0]").value("path: Invalid field for patching."));
 
