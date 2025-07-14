@@ -10,7 +10,6 @@ import java.util.*;
  * this class will be deleted and replaced with annotation-driven validation
  */
 
-
 public class UserProfileValidator {
 
     private static final Set<String> REQUIRED_FIELDS = new LinkedHashSet<>(Arrays.asList(
@@ -21,7 +20,6 @@ public class UserProfileValidator {
             "state",
             "zipCode"
     ));
-
 
     public static void validateCreateRequest(Map<String, String> payload) throws IllegalArgumentException {
         for (String field : REQUIRED_FIELDS) {
