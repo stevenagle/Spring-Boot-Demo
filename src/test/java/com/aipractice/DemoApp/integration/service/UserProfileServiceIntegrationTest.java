@@ -22,7 +22,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-class UserProfileServiceTest {
+class UserProfileServiceIntegrationTest {
 
     @Autowired
     private UserProfileRepository repository;

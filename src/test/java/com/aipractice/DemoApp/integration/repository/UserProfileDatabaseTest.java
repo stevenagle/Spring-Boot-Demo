@@ -1,4 +1,4 @@
-package com.aipractice.DemoApp.unit.repository;
+package com.aipractice.DemoApp.integration.repository;
 
 import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.repository.UserProfileRepository;
