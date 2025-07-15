@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Schema(description = "Represents a user profile stored in the database")
+@Table(name = "user_profile")
 @Entity
-@Table(name = "user_profiles")
 @Data
 @Builder
 @NoArgsConstructor
