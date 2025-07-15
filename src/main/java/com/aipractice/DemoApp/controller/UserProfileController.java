@@ -4,9 +4,11 @@ import com.aipractice.DemoApp.service.UserProfileService;
 import com.aipractice.DemoApp.validation.UserProfileValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.Map;
 
+@Tag(name = "User Profile API", description = "CRUD operations for user profiles")
 @RestController
 @RequestMapping("/api/v1/demo")
 public class UserProfileController {
