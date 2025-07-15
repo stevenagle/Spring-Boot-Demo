@@ -2,6 +2,7 @@ package com.aipractice.DemoApp.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 @Schema(description = "Represents a user profile stored in the database")
@@ -24,6 +25,7 @@ public class UserProfile {
 
     @Schema(description = "User's email address", example = "testuser@apidemo.com")
     @Column(nullable = false)
+    @Email
     private String emailAddress;
 
     @Schema(description = "Street address of the user", example = "1234 Main St")
