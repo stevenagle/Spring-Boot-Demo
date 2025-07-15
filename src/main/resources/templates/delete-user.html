@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Delete User</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<div th:insert="fragments/navbar :: navbar"></div>
+<div class="container">
+    <h3>Delete User</h3>
+    <form th:action="@{/api/v1/demo/users/{id}(id=${userId})}" method="delete">
+        <div class="mb-3">
+            <label for="userId" class="form-label">User ID</label>
+            <input type="text" class="form-control" id="userId" name="id" required>
+        </div>
+        <button type="submit" class="btn btn-danger">Delete User</button>
+    </form>
+</div>
+</body>
+</html>

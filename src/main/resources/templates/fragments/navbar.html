@@ -1,0 +1,14 @@
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark mb-4"
+     xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">User Dashboard</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" th:href="@{/get-user}">Get User</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/create-user}">Create User</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/update-user}">Update User</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/delete-user}">Delete User</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

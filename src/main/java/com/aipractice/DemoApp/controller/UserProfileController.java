@@ -1,14 +1,11 @@
 package com.aipractice.DemoApp.controller;
 
-import com.aipractice.DemoApp.exception.InvalidUpdateException;
-import com.aipractice.DemoApp.exception.UserNotFoundException;
-import com.aipractice.DemoApp.domain.UserProfile;
+import com.aipractice.DemoApp.service.UserProfileService;
 import com.aipractice.DemoApp.validation.UserProfileValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.aipractice.DemoApp.service.UserProfileService;
+
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/demo")
