@@ -112,7 +112,7 @@ class UserProfileControllerUnitTest {
 
         mockMvc.perform(get("/api/v1/demo/users/banana"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Only numbers are supported for user lookup & should be less than 12 digits."));
+                .andExpect(content().string("User ID should be numeric and less than 12 digits."));
     }
 
     @Test
@@ -243,7 +243,7 @@ class UserProfileControllerUnitTest {
     void testDeleteUserProfile_invalidIdFormat_shouldReturn400() throws Exception {
         mockMvc.perform(delete("/api/v1/demo/users/abc123"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Only numbers are supported for user lookup & should be less than 12 digits."));
+                .andExpect(content().string("User ID should be numeric and less than 12 digits."));
 
     }
 }

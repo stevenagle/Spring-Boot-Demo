@@ -3,7 +3,7 @@ package com.aipractice.DemoApp.unit.service;
 import com.aipractice.DemoApp.TestData;
 import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.exception.InvalidUpdateException;
-import com.aipractice.DemoApp.exception.InvalidUserIdException;
+import com.aipractice.DemoApp.exception.InvalidUserInputException;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.repository.UserProfileRepository;
 import com.aipractice.DemoApp.service.UserProfileService;
@@ -139,7 +139,7 @@ class UserProfileServiceUnitTest {
         ResponseEntity<String> response = service.createUserProfile(payload);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("An error occurred while creating the user profile. Please try again later.", response.getBody());
+        assertEquals("An error occurred while creating a user profile. Double-check your request.", response.getBody());
     }
 
     // PATCH
@@ -164,7 +164,7 @@ class UserProfileServiceUnitTest {
     void updateUserProfile_invalidId_shouldThrowInvalidUserIdException() {
         Map<String, String> payload = Map.of("path", "city", "value", "UpdatedCity");
 
-        assertThrows(InvalidUserIdException.class, () ->
+        assertThrows(InvalidUserInputException.class, () ->
                 service.updateUserProfile("banana", payload));
     }
 

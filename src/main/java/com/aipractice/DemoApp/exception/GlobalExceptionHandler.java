@@ -4,13 +4,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidUserIdException.class)
-    public ResponseEntity<String> handleInvalidUserId(InvalidUserIdException ex) {
+    @ExceptionHandler(InvalidUserInputException.class)
+    public ResponseEntity<String> handleInvalidUserInput(InvalidUserInputException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Only numbers are supported for user lookup & should be less than 12 digits.");
+                .body(ex.getMessage());
     }
 
     @ExceptionHandler(UserNotFoundException.class)

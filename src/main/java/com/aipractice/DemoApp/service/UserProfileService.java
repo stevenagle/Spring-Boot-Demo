@@ -2,7 +2,7 @@ package com.aipractice.DemoApp.service;
 
 import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.exception.InvalidUpdateException;
-import com.aipractice.DemoApp.exception.InvalidUserIdException;
+import com.aipractice.DemoApp.exception.InvalidUserInputException;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.repository.UserProfileRepository;
 import org.springframework.http.HttpStatus;
@@ -70,7 +70,7 @@ public class UserProfileService {
             return ResponseEntity.ok("New user ID " + saved.getId() + " created successfully.");
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while creating the user profile. Please try again later.");
+                    .body("An error occurred while creating a user profile. Double-check your request.");
         }
     }
 
@@ -103,7 +103,7 @@ public class UserProfileService {
             return ResponseEntity.ok(field + " updated for user ID " + id);
 
         } catch (NumberFormatException e) {
-            throw new InvalidUserIdException(e.getMessage());
+            throw new InvalidUserInputException(e.getMessage());
         } catch (InvalidUpdateException | UserNotFoundException ex) {
             throw ex; // Let GlobalExceptionHandler handle these
         } catch (Exception ex) {

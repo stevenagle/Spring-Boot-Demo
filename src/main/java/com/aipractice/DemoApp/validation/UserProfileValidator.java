@@ -1,7 +1,7 @@
 package com.aipractice.DemoApp.validation;
 
 import com.aipractice.DemoApp.exception.InvalidUpdateException;
-import com.aipractice.DemoApp.exception.InvalidUserIdException;
+import com.aipractice.DemoApp.exception.InvalidUserInputException;
 
 import java.util.*;
 
@@ -31,11 +31,20 @@ public class UserProfileValidator {
                 throw new IllegalArgumentException("Field '" + field + "' cannot be blank.");
             }
         }
+
+        validateEmail(payload.get("emailAddress"));
     }
 
-    public static void validateUserId(String id) throws InvalidUserIdException {
+    public static void validateUserId(String id) throws InvalidUserInputException {
         if (!id.matches("^\\d+$") || id.length() > 12) {
-            throw new InvalidUserIdException("User ID should be numbers only.");
+            throw new InvalidUserInputException("User ID should be numeric and less than 12 digits.");
+        }
+    }
+
+    public static void validateEmail(String email) throws InvalidUserInputException {
+        final String EMAIL_REGEX = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+(\\.[a-zA-Z0-9._-]+)*\\.[a-zA-Z]{2,}$";
+        if (!email.matches(EMAIL_REGEX)) {
+            throw new InvalidUserInputException("Invalid email format. Only letters, digits, and . _ - are allowed. Email must include '@' and a valid domain.");
         }
     }
 

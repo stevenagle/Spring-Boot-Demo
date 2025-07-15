@@ -25,7 +25,6 @@ public class UserProfile {
 
     @Schema(description = "User's email address", example = "testuser@apidemo.com")
     @Column(nullable = false)
-    @Email
     private String emailAddress;
 
     @Schema(description = "Street address of the user", example = "1234 Main St")
