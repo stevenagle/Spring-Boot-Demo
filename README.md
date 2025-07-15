@@ -17,10 +17,11 @@ Build something clean & functional via TDD alongside Copilot. Constant iteration
 - Multi-field PATCH updates
 - Ongoing debate on if I want to save this as an easy skeleton reference for a basic Spring Boot CRUD app or extend it into something resembling an actual product
 - Build out Thymeleaf UI pages to wire a front-end for these operations
-- Add security features
 
 
 ## Done
+✅ Added Swagger/OpenAPI tooling
+
 ✅ H2 in-memory db added for real-time regression testing via Postman
 
 ✅ GET functionality fetches a user's profile via path variable and findById
