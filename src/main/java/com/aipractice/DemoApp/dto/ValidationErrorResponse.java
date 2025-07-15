@@ -1,4 +1,4 @@
-package com.aipractice.DemoApp.validation;
+package com.aipractice.DemoApp.dto;
 
 import java.util.List;
 

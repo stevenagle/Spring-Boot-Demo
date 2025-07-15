@@ -1,15 +1,20 @@
 package com.aipractice.DemoApp.exception;
 
-import com.aipractice.DemoApp.validation.ValidationErrorResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import com.aipractice.DemoApp.dto.ValidationErrorResponse;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.*;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-@RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidUserIdException.class)
@@ -30,15 +35,43 @@ public class GlobalExceptionHandler {
                 .body(ex.getMessage());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidationError(MethodArgumentNotValidException ex) {
-        List<String> errors = ex.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .toList();
+//    @ExceptionHandler(HandlerMethodValidationException.class)
+//    public ResponseEntity<ValidationErrorResponse> handleValidationError(MethodArgumentNotValidException ex) {
+//        List<String> errors = ex.getBindingResult().getFieldErrors().stream()
+//                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+//                .toList();
+//
+//        return ResponseEntity.badRequest()
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(new ValidationErrorResponse("Validation failure", errors));
+//    }
 
-        return ResponseEntity.badRequest()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ValidationErrorResponse("Validation failure", errors));
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
     }
+
+//    @Override
+//    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+//        MethodArgumentNotValidException ex,
+//        HttpHeaders headers,
+//        HttpStatusCode status,
+//        WebRequest request
+//    ) {
+//        List<String> errors = ex.getBindingResult().getFieldErrors().stream()
+//            .map(err -> err.getField() + ": " + err.getDefaultMessage())
+//            .toList();
+//
+//        ValidationErrorResponse response = new ValidationErrorResponse("Validation failure", errors);
+//        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+//    }
 }
 
