@@ -13,9 +13,8 @@ Build something clean & functional via TDD alongside Copilot. Constant iteration
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## In-progress:
-- Conceptualizing how I want to streamline validation (currently using a somewhat hacky validator class during bootstrapping)
-- Multi-field PATCH updates
-- Ongoing debate on if I want to save this as an easy skeleton reference for a basic Spring Boot CRUD app or extend it into something resembling an actual product
+- Conceptualizing how I want to streamline validation. Currently using custom validation, but that's only because if I wire in @Valid and enforce DTOs, I end up with a lot of exceptions that are hard to wrangle. MethodArgumentNotValidExceptions can't be caught by ControllerAdvice and don't provide meaningful feedback. Once a UI is built, I can do front-end validation to block these at the form level and delete my custom validation while adding more reliance on Spring validation as a backup mechanism.
+- Multi-field PATCH updates.
 - Build out Thymeleaf UI pages to wire a front-end for these operations
 
 
@@ -25,6 +24,8 @@ Build something clean & functional via TDD alongside Copilot. Constant iteration
 ✅ H2 in-memory db added for real-time regression testing via Postman
 
 ✅ GET functionality fetches a user's profile via path variable and findById
+
+✅ GET findAll() is now open
 
 ✅ POST functionality creates a new user profile
 
