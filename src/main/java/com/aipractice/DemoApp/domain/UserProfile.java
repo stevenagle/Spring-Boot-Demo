@@ -1,37 +1,44 @@
 package com.aipractice.DemoApp.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Schema(description = "Represents a user profile stored in the database")
 @Entity
-@Table(name = "user_profile")
-@Getter
-@Setter
+@Table(name = "user_profiles")
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@Builder
 public class UserProfile {
 
+    @Schema(description = "Unique identifier for the user", example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Schema(description = "Username for login or display", example = "TestUser1")
     @Column(nullable = false)
     private String username;
 
-    @Column(name = "email_address", nullable = false)
+    @Schema(description = "User's email address", example = "testuser@apidemo.com")
+    @Column(nullable = false)
     private String emailAddress;
 
-    @Column(name = "street_address", nullable = false)
+    @Schema(description = "Street address of the user", example = "1234 Main St")
+    @Column(nullable = false)
     private String streetAddress;
 
+    @Schema(description = "City of residence", example = "Anywhereville")
     @Column(nullable = false)
     private String city;
 
+    @Schema(description = "State abbreviation", example = "IL")
     @Column(nullable = false)
     private String state;
 
-    @Column(name = "zip_code", nullable = false)
+    @Schema(description = "Postal zip code", example = "12345")
+    @Column(nullable = false)
     private String zipCode;
 }
