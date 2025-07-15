@@ -42,6 +42,18 @@ public class UserProfileController {
         }
     }
 
+    // GET ALL users
+    @Operation(summary = "Get all users", description = "Returns all user profiles")
+    @ApiResponse(responseCode = "200", description = "User(s) found. If empty, no users present.")
+    @GetMapping("/users/")
+    public ResponseEntity<?> getAllUserProfiles() {
+        try {
+            return userProfileService.getAllUsers();
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
     // POST route creates a new user profile
     @Operation(
             summary = "Create a new user",

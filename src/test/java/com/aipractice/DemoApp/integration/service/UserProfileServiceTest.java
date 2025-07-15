@@ -1,17 +1,21 @@
-package com.aipractice.DemoApp.service;
+package com.aipractice.DemoApp.integration.service;
 
 import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.exception.InvalidUpdateException;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.repository.UserProfileRepository;
+import com.aipractice.DemoApp.service.UserProfileService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,10 +27,18 @@ class UserProfileServiceTest {
     @Autowired
     private UserProfileRepository repository;
 
+    @InjectMocks
+    private UserProfileService service;
+
+    @BeforeEach
+    void setUp() {
+        service = new UserProfileService(repository);
+    }
+
+    // GET tests
+
     @Test
     void testGetUserProfile_validIds_shouldReturnCorrectData() {
-        UserProfileService service = new UserProfileService(repository);
-
         ResponseEntity<?> response1 = service.getUserProfile("1");
         ResponseEntity<?> response2 = service.getUserProfile("2");
         ResponseEntity<?> response3 = service.getUserProfile("3");
@@ -41,7 +53,6 @@ class UserProfileServiceTest {
 
     @Test
     void testGetUserProfile_nonExistentId_shouldReturn404() {
-        UserProfileService service = new UserProfileService(repository);
         ResponseEntity<?> response = service.getUserProfile("999");
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -50,7 +61,6 @@ class UserProfileServiceTest {
 
     @Test
     void testGetUserProfile_invalidId_shouldReturn400() {
-        UserProfileService service = new UserProfileService(repository);
         ResponseEntity<?> response = service.getUserProfile("banana");
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -58,9 +68,20 @@ class UserProfileServiceTest {
     }
 
     @Test
-    void testCreateUserProfile_shouldPersistNewUser() {
-        UserProfileService service = new UserProfileService(repository);
+    void shouldReturnAllUsersSuccessfully() {
+        ResponseEntity<?> response = service.getAllUsers();
 
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody() instanceof List<?>);
+
+        List<?> results = (List<?>) response.getBody();
+        assertEquals(10, results.size()); // Or however many you expect
+    }
+
+    // POST tests
+
+    @Test
+    void testCreateUserProfile_shouldPersistNewUser() {
         var payload = Map.of(
                 "username", "zulu011",
                 "emailAddress", "zulu011@example.com",
@@ -89,8 +110,6 @@ class UserProfileServiceTest {
             "zipCode, 99999"
     })
     void testUpdateUserProfile_shouldUpdateField(String path, String value) {
-        UserProfileService service = new UserProfileService(repository);
-
         Map<String, String> payload = Map.of(
                 "op", "replace",
                 "path", path,
@@ -118,8 +137,6 @@ class UserProfileServiceTest {
 
     @Test
     void testUpdateUserProfile_nonExistentId_shouldReturn404() {
-        UserProfileService service = new UserProfileService(repository);
-
         Map<String, String> updatePayload = Map.of(
                 "op", "replace",
                 "path", "city",
@@ -134,8 +151,6 @@ class UserProfileServiceTest {
 
     @Test
     void testUpdateUserProfile_invalidField_shouldThrowInvalidUpdateException() {
-        UserProfileService service = new UserProfileService(repository);
-
         Map<String, String> updatePayload = Map.of(
                 "op", "replace",
                 "path", "unknownField",
@@ -153,8 +168,6 @@ class UserProfileServiceTest {
 
     @Test
     void testDeleteUserProfile_shouldRemoveUser() {
-        UserProfileService service = new UserProfileService(repository);
-
         // Confirm user exists
         Optional<UserProfile> before = repository.findById(1L);
         assertTrue(before.isPresent());
@@ -168,8 +181,6 @@ class UserProfileServiceTest {
 
     @Test
     void testDeleteUserProfile_nonExistentId_shouldThrowException() {
-        UserProfileService service = new UserProfileService(repository);
-
         assertThrows(UserNotFoundException.class, () ->
                 service.deleteUserProfile("999")
         );

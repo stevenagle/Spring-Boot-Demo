@@ -1,5 +1,7 @@
-package com.aipractice.DemoApp.controller;
+package com.aipractice.DemoApp.unit.controller;
 
+import com.aipractice.DemoApp.TestData;
+import com.aipractice.DemoApp.controller.UserProfileController;
 import com.aipractice.DemoApp.domain.UserProfile;
 import com.aipractice.DemoApp.exception.UserNotFoundException;
 import com.aipractice.DemoApp.service.UserProfileService;
@@ -13,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.when;
@@ -63,6 +66,8 @@ class UserProfileControllerTest {
             }
             """;
 
+
+    // GET tests
     @Test
     void testGetUserProfileSuccess_id1() throws Exception {
         var user = UserProfile.builder()
@@ -109,6 +114,23 @@ class UserProfileControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Only numbers are supported for user lookup & should be less than 12 digits."));
     }
+
+    @Test
+    void shouldReturnAllUsers() throws Exception {
+        List<UserProfile> mockUsers = TestData.provideUserProfiles();
+
+        when(userProfileService.getAllUsers()).thenAnswer(x -> ResponseEntity.ok(mockUsers));
+
+        mockMvc.perform(get("/api/v1/demo/users/")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(mockUsers.size()))
+                .andExpect(jsonPath("$[0].username").value("TestUser1"))
+                .andExpect(jsonPath("$[1].emailAddress").value("testuser2@apidemo.com"))
+                .andExpect(jsonPath("$[2].city").value("Naperville"));
+    }
+
+    // POST tests
 
     @Test
     void testCreateUserProfile_success() throws Exception {

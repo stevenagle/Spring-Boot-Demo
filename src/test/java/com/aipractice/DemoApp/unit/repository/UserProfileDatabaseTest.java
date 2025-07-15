@@ -1,6 +1,7 @@
-package com.aipractice.DemoApp.repository;
+package com.aipractice.DemoApp.unit.repository;
 
 import com.aipractice.DemoApp.domain.UserProfile;
+import com.aipractice.DemoApp.repository.UserProfileRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

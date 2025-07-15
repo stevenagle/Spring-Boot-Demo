@@ -39,6 +39,22 @@ public class UserProfileService {
         }
     }
 
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            var allUsers = repository.findAll();
+
+            if (allUsers.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body("No user profiles found in the database.");
+            }
+
+            return ResponseEntity.ok(allUsers);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("A server error occurred while retrieving user profiles.");
+        }
+    }
+
     public ResponseEntity<String> createUserProfile(Map<String, String> payload) {
         UserProfile user = UserProfile.builder()
                 .username(payload.get("username"))
