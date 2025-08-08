@@ -1,5 +1,9 @@
 ## Project Overview
 
+<p align="center">
+    <img src="https://skillicons.dev/icons?i=java,spring,gradle,git,idea"/>
+</p>
+
 Project started using Spring Initializr; a blank-canvas, generic Spring Boot project slowly expanding into a functional CRUD API app. Using Copilot to save time but it's a little overconfident sometimes. That said, none of this project has been copied in any way from another repo or user.
 
 ### Goals
