@@ -13,9 +13,10 @@ Build something clean & functional via TDD alongside Copilot. Constant iteration
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## In-progress:
-- Conceptualizing how I want to streamline validation. Currently using custom validation, but that's only because if I wire in @Valid and enforce DTOs, I end up with a lot of exceptions that are hard to wrangle. MethodArgumentNotValidExceptions can't be caught by ControllerAdvice and don't provide meaningful feedback. Once a UI is built, I can do front-end validation to block these at the form level and delete my custom validation while adding more reliance on Spring validation as a backup mechanism.
+
+- React front-end Fake Company site with a mock login portal
+- Currently using custom validation, but that's only because if I wire in @Valid and enforce DTOs, I end up with a lot of exceptions that are hard to wrangle. MethodArgumentNotValidExceptions can't be caught by ControllerAdvice and don't provide meaningful feedback. Once the UI is finished, I can lean on front-end validation to block these at the form level and increase reliance on Spring back-end validations.
 - Multi-field PATCH updates.
-- Build out Thymeleaf UI pages to wire a front-end for these operations
 
 
 ## Done
