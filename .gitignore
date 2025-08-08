@@ -3,7 +3,8 @@ HELP.md
 .gradle
 build/
 /build/
-!gradle/wrapper/gradle-wrapper.jar
+!backend/gradle/wrapper/gradle-wrapper.jar
+backend/build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 *.jar
@@ -45,9 +46,11 @@ out/
 
 # Node modules
 node_modules/
+frontend/node_modules/
 
 # Build output
 dist/
+frontend/dist/
 
 # System files
 .DS_Store
