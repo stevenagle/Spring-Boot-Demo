@@ -75,8 +75,8 @@ public class UserProfileController {
 
     //PATCH route allows updating a single user profile value
     @Operation(
-            summary = "Update a user field",
-            description = "Updates a specific field in the user profile using a PATCH operation"
+            summary = "Update user fields",
+            description = "Updates one or more fields in the user profile using a PATCH operation"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Field updated successfully"),
