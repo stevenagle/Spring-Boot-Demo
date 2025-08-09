@@ -1,26 +1,94 @@
-import React from "react";
-import styles from "./LandingPage.module.css";
-import heroImage from "../assets/hero.jpg";
+import React, { useState, useEffect } from 'react';
+import './LandingPage.css';
 
-const LandingPage = () => {
+const images = [
+  '/assets/hero.jpg',
+  '/assets/hero1.jpg',
+  '/assets/hero2.jpg',
+  '/assets/hero3.jpg',
+];
+
+const LandingPage: React.FC = () => {
+  const [quote, setQuote] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    // Simulate fetching quote
+    setTimeout(() => {
+      setQuote("Success is just failure that took a nap and woke up with a business plan.");
+      setLoading(false);
+    }, 1200);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 5000); // Change image every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
   return (
-    <div className={styles.container}>
-      <nav className={styles.navbar}>
-        <div className={styles.logo}>Fake Business</div>
-        <ul className={styles.navLinks}>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">About Me</a></li>
+    <div className="landing-wrapper">
+      <nav className="navbar">
+        <div className="logo">PretendCorp™</div>
+        <ul className="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/api">API</a></li>
         </ul>
       </nav>
 
-      <header className={styles.hero}>
-        <div className={styles.heroText}>
-          <h1>Welcome to my Spring Boot demo app.</h1>
-          <p>This isn't a real company, but we can pretend it is.</p>
-          <button className={styles.cta}>Get Started</button>
-        </div>
-        <img src={heroImage} alt="Team working together" className={styles.heroImage} />
-      </header>
+      <main className="main-content">
+        <section className="hero-section">
+          <div className="hero-text">
+            <h1>We Pretend to Make Money. <br></br>Consider the potential.</h1>
+            <p className="subtitle">Helping you do things. Sometimes they're actually good.</p>
+            <button className="cta-button">Get Started (or don't)</button>
+          </div>
+          <div className="carousel">
+            <button className="arrow left" onClick={handlePrev}>&#10094;</button>
+            <img
+              src={images[currentIndex]}
+              alt={`Slide ${currentIndex + 1}`}
+              className="carousel-image"
+              key={currentIndex}
+            />
+            <button className="arrow right" onClick={handleNext}>&#10095;</button>
+          </div>
+        </section>
+
+        <section className="features-section">
+          <h2>Why Choose Us?</h2>
+          <ul>
+            <li>✅ We use buzzwords like “synergy” and “blockchain”</li>
+            <li>✅ Our backend API exists (we think)</li>
+            <li>✅ Our support team is just a guy named Greg</li>
+            <li>✅ We have a roadmap. It’s mostly doodles.</li>
+          </ul>
+        </section>
+
+        <section className="quote-section">
+          <h2>Daily Motivation</h2>
+          {loading ? (
+            <p>Loading wisdom from our pretend backend...</p>
+          ) : (
+            <blockquote>{quote}</blockquote>
+          )}
+        </section>
+      </main>
+
+      <footer className="footer">
+        <p>&copy; {new Date().getFullYear()} PretendCorp™. All rights reserved-ish.</p>
+      </footer>
     </div>
   );
 };
