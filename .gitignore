@@ -16,6 +16,10 @@ backend/build/
 gradle-app.setting
 !gradle-wrapper.jar
 .gradletasknamecache
+.gradle/
+build/
+!backend/build.gradle
+!backend/settings.gradle
 
 ### STS ###
 .apt_generated
