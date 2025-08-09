@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './LandingPage.css';
+import Navbar from '../components/Navbar';
 
 const images = [
   '/assets/hero.jpg',
@@ -38,14 +39,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="landing-wrapper">
-      <nav className="navbar">
-        <div className="logo">PretendCorp™</div>
-        <ul className="nav-links">
-          <li><a href="/">Home</a></li>
-          <li><a href="/about">About</a></li>
-          <li><a href="/login">Login</a></li>
-        </ul>
-      </nav>
+      <Navbar />
 
       <main className="main-content">
         <section className="hero-section">
