@@ -43,14 +43,14 @@ const LandingPage: React.FC = () => {
         <ul className="nav-links">
           <li><a href="/">Home</a></li>
           <li><a href="/about">About</a></li>
-          <li><a href="/api">API</a></li>
+          <li><a href="/login">Login</a></li>
         </ul>
       </nav>
 
       <main className="main-content">
         <section className="hero-section">
           <div className="hero-text">
-            <h1>We Pretend to Make Money. <br></br>Consider the potential.</h1>
+            <h1>We pretend to make money. <br></br>The investors are happy.</h1>
             <p className="subtitle">Helping you do things. Sometimes they're actually good.</p>
             <button className="cta-button">Get Started (or don't)</button>
           </div>
@@ -70,9 +70,9 @@ const LandingPage: React.FC = () => {
           <h2>Why Choose Us?</h2>
           <ul>
             <li>✅ We use buzzwords like “synergy” and “blockchain”</li>
-            <li>✅ Our backend API exists (we think)</li>
-            <li>✅ Our support team is just a guy named Greg</li>
-            <li>✅ We have a roadmap. It’s mostly doodles.</li>
+            <li>✅ Our backend API is super secure</li>
+            <li>✅ Our support team has doubled this year (hired one more person)</li>
+            <li>✅ We have a roadmap, it’s just under construction</li>
           </ul>
         </section>
 
