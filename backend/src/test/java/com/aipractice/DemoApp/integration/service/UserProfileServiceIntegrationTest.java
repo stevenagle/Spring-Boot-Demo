@@ -72,7 +72,7 @@ class UserProfileServiceIntegrationTest {
         ResponseEntity<?> response = service.getAllUsers();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody() instanceof List<?>);
+        assertInstanceOf(List.class, response.getBody());
 
         List<?> results = (List<?>) response.getBody();
         assertEquals(10, results.size()); // Or however many you expect
