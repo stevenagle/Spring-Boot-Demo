@@ -127,8 +127,8 @@ body {
 
 .carousel {
   position: relative;
-  width: 400px;
-  height: 250px; /* Fixed height to prevent layout shift */
+  width: 600px;
+  height: 375px; /* Fixed height to prevent layout shift */
   max-width: 90%;
   margin: 2rem auto;
   overflow: hidden;
@@ -151,7 +151,7 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(43, 108, 176, 0.8);
+  /* background-color: rgba(43, 108, 176, 0.8); */
   color: white;
   border: none;
   font-size: 2rem;
@@ -160,6 +160,7 @@ body {
   z-index: 1;
   border-radius: 50%;
   transition: background-color 0.3s ease;
+  opacity: 20;
 }
 
 .arrow:hover {
