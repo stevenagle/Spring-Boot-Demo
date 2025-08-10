@@ -86,8 +86,13 @@ body {
 /* Quote */
 .quote-section {
   margin: 2rem 0;
+  padding: 1rem;
+  background-color: #f9fafb; /* light background */
+  color: #2d3748; /* dark gray text */
   font-style: italic;
+  border-radius: 6px;
 }
+
 
 /* Gallery */
 .gallery-section {

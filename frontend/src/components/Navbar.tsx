@@ -8,16 +8,16 @@ const Navbar: React.FC = () => {
     const isActive = (path: string) => location.pathname === path;
 
     return (
-    <nav className="navbar">
-        <div className="navbar-logo">
-        <NavLink to="/">MockPortal</NavLink>
-        </div>
-        <ul className="navbar-links">
-        <li><NavLink to="/">Home</NavLink></li>
-        <li><NavLink to="/about">About</NavLink></li>
-        <li><NavLink to="/login">Login</NavLink></li>
-        </ul>
-    </nav>
+        <nav className="navbar">
+            <div className="navbar-logo">
+                <NavLink to="/">MockPortal</NavLink>
+            </div>
+            <ul className="navbar-links">
+                <li><NavLink to="/">Home</NavLink></li>
+                <li><NavLink to="/about">About</NavLink></li>
+                <li><NavLink to="/login">Login</NavLink></li>
+            </ul>
+        </nav>
     );
 };
 
