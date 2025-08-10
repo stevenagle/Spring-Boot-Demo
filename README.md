@@ -1,7 +1,7 @@
 ## Project Overview
 
 <p align="center">
-    <img src="https://skillicons.dev/icons?i=java,spring,gradle,git,idea"/>
+    <img src="https://skillicons.dev/icons?i=java,spring,gradle,react,ts,js,vite,html,css,git,idea,vscode"/>
 </p>
 
 Project started using Spring Initializr; a blank-canvas, generic Spring Boot project slowly expanding into a full-fledged front and back-end app. None of this project has been copied in any way from another repo or user.
