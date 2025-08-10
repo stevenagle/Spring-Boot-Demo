@@ -55,10 +55,10 @@ class UserProfileControllerIntegrationTest {
     }
 
     @Test
-    void getUser_invalidIdFormat_shouldReturn400() throws Exception {
-        mockMvc.perform(get("/api/v1/demo/users/banana"))
+    void getUser_invalidUsernameFormat_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/api/v1/demo/users/abc#"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("User ID should be numeric and less than 12 digits.")));
+                .andExpect(content().string(containsString("Only numbers are supported for user lookup & should be less than 12 digits.")));
     }
 
     @Test
@@ -186,18 +186,18 @@ class UserProfileControllerIntegrationTest {
 
     // DELETE tests
     @Test
-    void deleteUser_validId_shouldReturn204() throws Exception {
-        Long id = repository.findAll().get(0).getId();
+    void deleteUser_validUsername_shouldReturn204() throws Exception {
+        String username = repository.findAll().get(0).getUsername();
 
-        mockMvc.perform(delete("/api/v1/demo/users/" + id))
+        mockMvc.perform(delete("/api/v1/demo/users/" + username))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteUser_invalidIdFormat_shouldReturn400() throws Exception {
-        mockMvc.perform(delete("/api/v1/demo/users/abc123"))
+    void deleteUser_invalidUsernameFormat_shouldReturn400() throws Exception {
+        mockMvc.perform(delete("/api/v1/demo/users/abc123&"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("User ID should be numeric and less than 12 digits.")));
+                .andExpect(content().string(containsString("Username should be less than 32 characters and contain only letters and numbers.")));
     }
 
     @Test

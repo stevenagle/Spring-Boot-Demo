@@ -77,21 +77,21 @@ class UserProfileValidatorTest {
     // User ID validations
     @Test
     void validateUserId_valid_shouldPass() {
-        assertDoesNotThrow(() -> UserProfileValidator.validateUserId("123456"));
+        assertDoesNotThrow(() -> UserProfileValidator.validateUsername("123456"));
     }
 
     @Test
-    void validateUserId_nonNumeric_shouldThrow() {
+    void validateUsername_invalidChars_shouldThrow() {
         InvalidUserInputException ex = assertThrows(InvalidUserInputException.class,
-                () -> UserProfileValidator.validateUserId("abc123"));
-        assertEquals("User ID should be numeric and less than 12 digits.", ex.getMessage());
+                () -> UserProfileValidator.validateUsername("abc123#"));
+        assertEquals("Username should be less than 32 characters and contain only letters and numbers.", ex.getMessage());
     }
 
     @Test
-    void validateUserId_tooLong_shouldThrow() {
+    void validateUsername_tooLong_shouldThrow() {
         InvalidUserInputException ex = assertThrows(InvalidUserInputException.class,
-                () -> UserProfileValidator.validateUserId("1234567890123"));
-        assertEquals("User ID should be numeric and less than 12 digits.", ex.getMessage());
+                () -> UserProfileValidator.validateUsername("sfjkafj2309823klafklsdflkdj2058929082lkdfkkfdklj205998255lflkjf205902958"));
+        assertEquals("Username should be less than 32 characters and contain only letters and numbers.", ex.getMessage());
     }
 
     // Email matching

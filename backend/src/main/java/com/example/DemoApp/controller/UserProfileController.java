@@ -23,20 +23,20 @@ public class UserProfileController {
         this.userProfileService = userProfileService;
     }
 
-    // GET route fetches a single user by id
-    @Operation(summary = "Get user by ID", description = "Returns a user profile for the given ID")
+    // GET route fetches a single user by username
+    @Operation(summary = "Get user by username", description = "Returns a user profile for the given username")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User found"),
-            @ApiResponse(responseCode = "400", description = "Invalid User ID"),
+            @ApiResponse(responseCode = "400", description = "Invalid Username"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @GetMapping("/users/{id}")
+    @GetMapping("/users/{username}")
     public ResponseEntity<?> getUserProfile(
-            @Parameter(description = "User ID (numeric only, max 12 digits)", example = "123")
-            @PathVariable String id) {
+            @Parameter(description = "Username", example = "testuser123")
+            @PathVariable String username) {
         try {
-            UserProfileValidator.validateUserId(id);
-            return userProfileService.getUserProfile(id);
+            UserProfileValidator.validateUsername(username);
+            return userProfileService.getUserProfile(username);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
@@ -83,11 +83,11 @@ public class UserProfileController {
             @ApiResponse(responseCode = "400", description = "Invalid field or value"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @PatchMapping("/users/{id}")
-    public ResponseEntity<?> updateUserProfile(@PathVariable String id, @RequestBody Map<String,String> request) {
+    @PatchMapping("/users/{username}")
+    public ResponseEntity<?> updateUserProfile(@PathVariable String username, @RequestBody Map<String,String> request) {
         try {
             UserProfileValidator.validatePatchRequest(request);
-            return userProfileService.updateUserProfile(id, request);
+            return userProfileService.updateUserProfile(username, request);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
@@ -96,18 +96,18 @@ public class UserProfileController {
     // DELETE route deletes a user profile record
     @Operation(
             summary = "Delete user",
-            description = "Deletes the user profile with the given ID"
+            description = "Deletes the user profile with the given username"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid user ID format"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity<?> deleteUserProfile(@PathVariable String id) {
+    @DeleteMapping("/users/{username}")
+    public ResponseEntity<?> deleteUserProfile(@PathVariable String username) {
         try {
-            UserProfileValidator.validateUserId(id);
-            return userProfileService.deleteUserProfile(id);
+            UserProfileValidator.validateUsername(username);
+            return userProfileService.deleteUserProfile(username);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }

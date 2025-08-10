@@ -35,9 +35,9 @@ public class UserProfileValidator {
         validateEmail(payload.get("emailAddress"));
     }
 
-    public static void validateUserId(String id) throws InvalidUserInputException {
-        if (!id.matches("^\\d+$") || id.length() > 12) {
-            throw new InvalidUserInputException("User ID should be numeric and less than 12 digits.");
+    public static void validateUsername(String id) throws InvalidUserInputException {
+        if (!id.matches("^[A-Za-z0-9]{1,32}$")) {
+            throw new InvalidUserInputException("Username should be less than 32 characters and contain only letters and numbers.");
         }
     }
 

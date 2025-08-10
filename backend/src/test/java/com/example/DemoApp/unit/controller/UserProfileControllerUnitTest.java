@@ -105,14 +105,14 @@ class UserProfileControllerUnitTest {
     }
 
     @Test
-    void testGetUserProfileInvalidIdFormat() throws Exception {
-        when(userProfileService.getUserProfile("banana"))
+    void testGetUserProfileInvalidUsernameFormat() throws Exception {
+        when(userProfileService.getUserProfile("banana^"))
                 .thenAnswer(x -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Only numbers are supported for user lookup & should be less than 12 digits."));
 
-        mockMvc.perform(get("/api/v1/demo/users/banana"))
+        mockMvc.perform(get("/api/v1/demo/users/banana^"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("User ID should be numeric and less than 12 digits."));
+                .andExpect(content().string("Username should be less than 32 characters and contain only letters and numbers."));
     }
 
     @Test
@@ -231,19 +231,18 @@ class UserProfileControllerUnitTest {
 
     @Test
     void testDeleteUserProfile_userNotFound_shouldReturn404() throws Exception {
-        when(userProfileService.deleteUserProfile("999"))
+        when(userProfileService.deleteUserProfile("TestUser999"))
                 .thenThrow(new UserNotFoundException("User not found"));
 
-        mockMvc.perform(delete("/api/v1/demo/users/999"))
+        mockMvc.perform(delete("/api/v1/demo/users/TestUser999"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("That user does not exist. Please try again."));
     }
 
     @Test
-    void testDeleteUserProfile_invalidIdFormat_shouldReturn400() throws Exception {
-        mockMvc.perform(delete("/api/v1/demo/users/abc123"))
+    void testDeleteUserProfile_invalidUsernameFormat_shouldReturn400() throws Exception {
+        mockMvc.perform(delete("/api/v1/demo/users/testuser$#"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("User ID should be numeric and less than 12 digits."));
-
+                .andExpect(content().string("Username should be less than 32 characters and contain only letters and numbers."));
     }
 }

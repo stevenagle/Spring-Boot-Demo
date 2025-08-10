@@ -20,7 +20,7 @@ public class UserProfile {
     private Long id;
 
     @Schema(description = "Username for login or display", example = "TestUser1")
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String username;
 
     @Schema(description = "User's email address", example = "testuser@apidemo.com")
