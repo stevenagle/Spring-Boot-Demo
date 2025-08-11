@@ -39,16 +39,20 @@ class UserProfileServiceIntegrationTest {
 
     @Test
     void testGetUserProfile_validIds_shouldReturnCorrectData() {
-        ResponseEntity<?> response1 = service.getUserProfile("1");
-        ResponseEntity<?> response2 = service.getUserProfile("2");
-        ResponseEntity<?> response3 = service.getUserProfile("3");
+        ResponseEntity<?> response1 = service.getUserProfile("alpha001");
+        ResponseEntity<?> response2 = service.getUserProfile("bravo002");
+        ResponseEntity<?> response3 = service.getUserProfile("charlie003");
 
         assertEquals(HttpStatus.OK, response1.getStatusCode());
-        assertTrue(response1.getBody() instanceof UserProfile);
-        assertEquals("alpha001", ((UserProfile) response1.getBody()).getUsername());
+        assertEquals(HttpStatus.OK, response2.getStatusCode());
+        assertEquals(HttpStatus.OK, response3.getStatusCode());
+        assertInstanceOf(UserProfile.class, response1.getBody());
+        assertInstanceOf(UserProfile.class, response2.getBody());
+        assertInstanceOf(UserProfile.class, response3.getBody());
+        assertEquals(1L, ((UserProfile) response1.getBody()).getId());
 
-        assertEquals("bravo002", ((UserProfile) response2.getBody()).getUsername());
-        assertEquals("charlie003", ((UserProfile) response3.getBody()).getUsername());
+        assertEquals(2L, ((UserProfile) response2.getBody()).getId());
+        assertEquals(3L, ((UserProfile) response3.getBody()).getId());
     }
 
     @Test
@@ -61,10 +65,10 @@ class UserProfileServiceIntegrationTest {
 
     @Test
     void testGetUserProfile_invalidId_shouldReturn400() {
-        ResponseEntity<?> response = service.getUserProfile("banana");
+        ResponseEntity<?> response = service.getUserProfile("jhg451#$");
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Only numbers are supported for user lookup & should be less than 12 digits.", response.getBody());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("That user does not exist. Please try again.", response.getBody());
     }
 
     @Test
@@ -102,7 +106,6 @@ class UserProfileServiceIntegrationTest {
 
     @ParameterizedTest
     @CsvSource({
-            "username, UpdatedUser001",
             "emailAddress, updated@example.com",
             "streetAddress, 0987 Main St",
             "city, Gotham",
@@ -116,10 +119,10 @@ class UserProfileServiceIntegrationTest {
                 "value", value
         );
 
-        ResponseEntity<?> response = service.updateUserProfile("1", payload);
+        ResponseEntity<?> response = service.updateUserProfile("alpha001", payload);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(path + " updated for user ID 1", response.getBody());
+        assertEquals(path + " updated for user: alpha001", response.getBody());
 
         Optional<UserProfile> updated = repository.findById(1L);
         assertTrue(updated.isPresent());
@@ -144,9 +147,9 @@ class UserProfileServiceIntegrationTest {
         );
 
         UserNotFoundException ex = assertThrows(UserNotFoundException.class, () ->
-                service.updateUserProfile("999", updatePayload)
+                service.updateUserProfile("aeiou", updatePayload)
         );
-        assertEquals("No user found with ID 999", ex.getMessage());
+        assertEquals("No user found with username: aeiou", ex.getMessage());
     }
 
     @Test
@@ -158,7 +161,7 @@ class UserProfileServiceIntegrationTest {
         );
 
         InvalidUpdateException ex = assertThrows(InvalidUpdateException.class, () ->
-                service.updateUserProfile("1", updatePayload)
+                service.updateUserProfile("alpha001", updatePayload)
         );
 
         assertEquals("Field 'unknownField' cannot be updated.", ex.getMessage());
@@ -172,7 +175,7 @@ class UserProfileServiceIntegrationTest {
         Optional<UserProfile> before = repository.findById(1L);
         assertTrue(before.isPresent());
 
-        ResponseEntity<?> response = service.deleteUserProfile("1");
+        ResponseEntity<?> response = service.deleteUserProfile(before.get().getUsername());
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
         Optional<UserProfile> after = repository.findById(1L);

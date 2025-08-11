@@ -3,8 +3,11 @@ package com.example.DemoApp.service;
 import com.example.DemoApp.domain.UserProfile;
 import com.example.DemoApp.exception.InvalidUpdateException;
 import com.example.DemoApp.exception.InvalidUserInputException;
+import com.example.DemoApp.exception.UserAlreadyExistsException;
 import com.example.DemoApp.exception.UserNotFoundException;
 import com.example.DemoApp.repository.UserProfileRepository;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,18 +24,16 @@ public class UserProfileService {
         this.repository = repository;
     }
 
-    public ResponseEntity<?> getUserProfile(String idString) {
+    public ResponseEntity<?> getUserProfile(String username) {
         try {
-            Long id = Long.parseLong(idString);
-
-            return repository.findById(id)
+            return repository.findByUsername(username)
                     .<ResponseEntity<?>>map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                             .body("That user does not exist. Please try again."));
 
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Only numbers are supported for user lookup & should be less than 12 digits.");
+                    .body("Username should be less than 32 characters and contain only letters and numbers.");
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("A server error occurred while retrieving the user profile.");
@@ -68,19 +69,20 @@ public class UserProfileService {
         try {
             UserProfile saved = repository.save(user);
             return ResponseEntity.ok("New user ID " + saved.getId() + " created successfully.");
+        } catch (DataIntegrityViolationException dive) {
+            throw new UserAlreadyExistsException();
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while creating a user profile. Double-check your request.");
         }
     }
 
-    public ResponseEntity<?> updateUserProfile(String userId, Map<String, String> payload) {
+    public ResponseEntity<?> updateUserProfile(String username, Map<String, String> payload) {
         try {
-            Long id = Long.parseLong(userId);
-            Optional<UserProfile> existingUserOpt = repository.findById(id);
+            Optional<UserProfile> existingUserOpt = repository.findByUsername(username);
 
             if (existingUserOpt.isEmpty()) {
-                throw new UserNotFoundException("No user found with ID " + id);
+                throw new UserNotFoundException("No user found with username: " + username);
             }
 
             // Extract update info
@@ -99,11 +101,11 @@ public class UserProfileService {
                 default -> throw new InvalidUpdateException("Field '" + field + "' cannot be updated.");
             }
 
-            repository.save(user);
-            return ResponseEntity.ok(field + " updated for user ID " + id);
+            repository.saveAndFlush(user);
+            return ResponseEntity.ok(field + " updated for user: " + user.getUsername());
 
-        } catch (NumberFormatException e) {
-            throw new InvalidUserInputException(e.getMessage());
+        } catch (DataIntegrityViolationException dive) {
+            throw new UserAlreadyExistsException();
         } catch (InvalidUpdateException | UserNotFoundException ex) {
             throw ex; // Let GlobalExceptionHandler handle these
         } catch (Exception ex) {
@@ -112,20 +114,16 @@ public class UserProfileService {
         }
     }
 
-    public ResponseEntity<?> deleteUserProfile(String userId) {
+    public ResponseEntity<?> deleteUserProfile(String username) {
         try {
-            Long id = Long.parseLong(userId);
-            Optional<UserProfile> user = repository.findById(id);
+            Optional<UserProfile> userOpt = repository.findByUsername(username);
 
-            if (user.isEmpty()) {
-                throw new UserNotFoundException("No user found with ID " + id);
+            if (userOpt.isEmpty()) {
+                throw new UserNotFoundException("No user found with username: " + username);
             }
-
-            repository.deleteById(id);
+            UserProfile user = userOpt.get();
+            repository.delete(user);
             return ResponseEntity.noContent().build();
-
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body("User ID should be a numeric value.");
         } catch (UserNotFoundException ex) {
             throw ex; // Let GlobalExceptionHandler handle this
         } catch (Exception ex) {

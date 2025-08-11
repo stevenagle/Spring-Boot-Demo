@@ -50,9 +50,20 @@ class UserProfileIntegrationTest {
             .city("Oldtown")
             .state("TX")
             .zipCode("00000")
-            .build());
+            .build()
+        );
 
-        getUrl = "/api/v1/demo/users/" + sut.getId();
+        UserProfile secondUser = repository.save(UserProfile.builder()
+                .username("ExistingUser")
+                .emailAddress("existing@example.com")
+                .streetAddress("456 Myway Way")
+                .city("Newburg")
+                .state("OK")
+                .zipCode("65432")
+                .build()
+        );
+
+        getUrl = "/api/v1/demo/users/" + sut.getUsername();
     }
 
     @Test
@@ -130,9 +141,28 @@ class UserProfileIntegrationTest {
                 .andExpect(content().string("Missing required field: " + missingField));
     }
 
+    @Test
+    void testCreateUserProfile_duplicateUsername_shouldReturnConflict() throws Exception {
+        String payload = """
+        {
+          "username": "StartUser",
+          "emailAddress": "duplicate@example.com",
+          "streetAddress": "123 Dup St",
+          "city": "Dupville",
+          "state": "TX",
+          "zipCode": "11111"
+        }
+        """;
+
+        mockMvc.perform(post("/api/v1/demo/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isConflict())
+                .andExpect(content().string("That user already exists. Try a different username."));
+    }
+
     @ParameterizedTest
     @CsvSource({
-            "username, NewUser",
             "emailAddress, new@example.com",
             "streetAddress, 200 New Ave",
             "city, Newville",
@@ -152,13 +182,64 @@ class UserProfileIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isOk())
-                .andExpect(content().string(path + " updated for user ID " + sut.getId()));
+                .andExpect(content().string(path + " updated for user: " + sut.getUsername()));
 
         mockMvc.perform(get(getUrl))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$." + path).value(newValue));
 
         repository.saveAndFlush(sut);
+    }
+
+    @Test
+    void testPatchUsername_shouldChangeUsername() throws Exception {
+        String newUsername = "newUsername";
+        String payload = String.format("""
+        {
+          "op": "replace",
+          "path": "username",
+          "value": "%s"
+        }
+        """, newUsername);
+
+        mockMvc.perform(patch(getUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(content().string("username updated for user: " + newUsername)); // ✅ Use newUsername here
+
+        Optional<UserProfile> updated = repository.findByUsername(newUsername);
+        assertTrue(updated.isPresent(), "User should exist after username update");
+
+        sut = updated.get();
+        getUrl = "/api/v1/demo/users/" + sut.getUsername();
+
+        mockMvc.perform(get(getUrl))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value(newUsername));
+        repository.saveAndFlush(sut);
+    }
+
+    @Test
+    void testPatchUsername_shouldFailExistingUsername() throws Exception {
+        Optional<UserProfile> existingUser = repository.findByUsername("ExistingUser");
+        String existingUsername = "";
+        if (existingUser.isPresent()) {
+            existingUsername = existingUser.get().getUsername();
+        }
+        String payload = String.format("""
+        {
+          "op": "replace",
+          "path": "username",
+          "value": "%s"
+        }
+        """, existingUsername);
+
+        mockMvc.perform(patch(getUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isConflict())
+                .andExpect(content().string("That user already exists. Try a different username."));
     }
 
     @Test

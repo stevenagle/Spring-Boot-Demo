@@ -1,231 +1,263 @@
 package com.example.DemoApp.unit.service;
 
-import com.example.DemoApp.TestData;
+import com.example.DemoApp.service.UserProfileService;
 import com.example.DemoApp.domain.UserProfile;
 import com.example.DemoApp.exception.InvalidUpdateException;
-import com.example.DemoApp.exception.InvalidUserInputException;
+import com.example.DemoApp.exception.UserAlreadyExistsException;
 import com.example.DemoApp.exception.UserNotFoundException;
 import com.example.DemoApp.repository.UserProfileRepository;
-import com.example.DemoApp.service.UserProfileService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserProfileServiceUnitTest {
+class UserProfileServiceTest {
 
     @Mock
-    private UserProfileRepository repository;
+    private UserProfileRepository repo;
 
     @InjectMocks
     private UserProfileService service;
 
-    // GET by ID
-    @Test
-    void getUserProfile_validId_shouldReturnUser() {
-        UserProfile user = TestData.provideUserProfiles().get(0);
-        when(repository.findById(1L)).thenReturn(Optional.of(user));
+    private UserProfile sampleUser;
 
-        ResponseEntity<?> response = service.getUserProfile("1");
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(user, response.getBody());
-    }
-
-    @Test
-    void getUserProfile_invalidIdFormat_shouldReturnBadRequest() {
-        ResponseEntity<?> response = service.getUserProfile("banana");
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Only numbers are supported for user lookup & should be less than 12 digits.", response.getBody());
-    }
-
-    @Test
-    void getUserProfile_nonExistentId_shouldReturnNotFound() {
-        when(repository.findById(999L)).thenReturn(Optional.empty());
-
-        ResponseEntity<?> response = service.getUserProfile("999");
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("That user does not exist. Please try again.", response.getBody());
-    }
-
-    // GET all
-    @Test
-    void getAllUsers_shouldReturnListOfUsers() {
-        List<UserProfile> users = TestData.provideUserProfiles();
-        when(repository.findAll()).thenReturn(users);
-
-        ResponseEntity<?> response = service.getAllUsers();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(users, response.getBody());
-    }
-
-    @Test
-    void getAllUsers_emptyList_shouldReturnNoContent() {
-        when(repository.findAll()).thenReturn(List.of());
-
-        ResponseEntity<?> response = service.getAllUsers();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("No user profiles found in the database.", response.getBody());
-    }
-
-    @Test
-    void getAllUsers_exception_shouldReturnServerError() {
-        when(repository.findAll()).thenThrow(new RuntimeException("DB error"));
-
-        ResponseEntity<?> response = service.getAllUsers();
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("A server error occurred while retrieving user profiles.", response.getBody());
-    }
-
-    // POST
-    @Test
-    void createUserProfile_shouldReturnSuccessMessage() {
-        Map<String, String> payload = Map.of(
-                "username", "newuser",
-                "emailAddress", "newuser@example.com",
-                "streetAddress", "123 New St",
-                "city", "Newville",
-                "state", "TX",
-                "zipCode", "75001"
-        );
-
-        UserProfile savedUser = UserProfile.builder()
-                .id(99L)
-                .username("newuser")
-                .emailAddress("newuser@example.com")
-                .streetAddress("123 New St")
-                .city("Newville")
-                .state("TX")
-                .zipCode("75001")
+    @BeforeEach
+    void setUp() {
+        sampleUser = UserProfile.builder()
+                .id(123L)
+                .username("alice")
+                .emailAddress("alice@example.com")
+                .streetAddress("123 Main St")
+                .city("Wonderland")
+                .state("IL")
+                .zipCode("60601")
                 .build();
+    }
 
-        when(repository.save(any(UserProfile.class))).thenReturn(savedUser);
+    //
+    // getUserProfile(...)
+    //
 
-        ResponseEntity<String> response = service.createUserProfile(payload);
+    @Test
+    void getUserProfile_whenFound_returns200AndBody() {
+        when(repo.findByUsername("alice")).thenReturn(Optional.of(sampleUser));
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().contains("New user ID 99 created successfully."));
+        ResponseEntity<?> resp = service.getUserProfile("alice");
+
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(resp.getBody()).isSameAs(sampleUser);
     }
 
     @Test
-    void createUserProfile_exception_shouldReturnServerError() {
-        Map<String, String> payload = Map.of(
-                "username", "newuser",
-                "emailAddress", "newuser@example.com",
-                "streetAddress", "123 New St",
-                "city", "Newville",
-                "state", "TX",
-                "zipCode", "75001"
+    void getUserProfile_whenNotFound_returns404AndMessage() {
+        when(repo.findByUsername("bob")).thenReturn(Optional.empty());
+
+        ResponseEntity<?> resp = service.getUserProfile("bob");
+
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(resp.getBody()).isEqualTo("That user does not exist. Please try again.");
+    }
+
+    @Test
+    void getUserProfile_onGenericException_returns500() {
+        when(repo.findByUsername(anyString()))
+                .thenThrow(new RuntimeException("oops"));
+
+        ResponseEntity<?> resp = service.getUserProfile("anything");
+
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(resp.getBody())
+                .isEqualTo("A server error occurred while retrieving the user profile.");
+    }
+
+    //
+    // getAllUsers()
+    //
+
+    @Test
+    void getAllUsers_whenEmpty_returns200AndMsg() {
+        when(repo.findAll()).thenReturn(Collections.emptyList());
+
+        ResponseEntity<?> resp = service.getAllUsers();
+
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(resp.getBody()).isEqualTo("No user profiles found in the database.");
+    }
+
+    @Test
+    void getAllUsers_whenNonEmpty_returns200AndList() {
+        List<UserProfile> list = List.of(sampleUser);
+        when(repo.findAll()).thenReturn(list);
+
+        ResponseEntity<?> resp = service.getAllUsers();
+
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(resp.getBody()).isSameAs(list);
+    }
+
+    @Test
+    void getAllUsers_onException_returns500() {
+        when(repo.findAll()).thenThrow(new RuntimeException("fail"));
+
+        ResponseEntity<?> resp = service.getAllUsers();
+
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(resp.getBody())
+                .isEqualTo("A server error occurred while retrieving user profiles.");
+    }
+
+    //
+    // createUserProfile(...)
+    //
+
+    @Test
+    void createUserProfile_success_returns200WithIdMsg() {
+        Map<String,String> payload = Map.of(
+                "username",      sampleUser.getUsername(),
+                "emailAddress",  sampleUser.getEmailAddress(),
+                "streetAddress", sampleUser.getStreetAddress(),
+                "city",          sampleUser.getCity(),
+                "state",         sampleUser.getState(),
+                "zipCode",       sampleUser.getZipCode()
         );
 
-        when(repository.save(any(UserProfile.class))).thenThrow(new RuntimeException("DB error"));
+        when(repo.save(any())).thenReturn(sampleUser);
 
-        ResponseEntity<String> response = service.createUserProfile(payload);
+        ResponseEntity<String> resp = service.createUserProfile(payload);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("An error occurred while creating a user profile. Double-check your request.", response.getBody());
-    }
-
-    // PATCH
-    @Test
-    void updateUserProfile_validField_shouldUpdateSuccessfully() {
-        UserProfile user = TestData.provideUserProfiles().get(0);
-        when(repository.findById(1L)).thenReturn(Optional.of(user));
-        when(repository.save(any(UserProfile.class))).thenReturn(user);
-
-        Map<String, String> payload = Map.of(
-                "path", "city",
-                "value", "UpdatedCity"
-        );
-
-        ResponseEntity<?> response = service.updateUserProfile("1", payload);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("city updated for user ID 1", response.getBody());
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(resp.getBody())
+                .isEqualTo("New user ID " + sampleUser.getId() + " created successfully.");
     }
 
     @Test
-    void updateUserProfile_invalidId_shouldThrowInvalidUserIdException() {
-        Map<String, String> payload = Map.of("path", "city", "value", "UpdatedCity");
+    void createUserProfile_whenDuplicate_throwsUserAlreadyExists() {
+        when(repo.save(any()))
+                .thenThrow(new DataIntegrityViolationException("dup"));
 
-        assertThrows(InvalidUserInputException.class, () ->
-                service.updateUserProfile("banana", payload));
+        assertThatThrownBy(() -> service.createUserProfile(Map.of()))
+                .isInstanceOf(UserAlreadyExistsException.class);
     }
 
     @Test
-    void updateUserProfile_nonExistentUser_shouldThrowUserNotFoundException() {
-        when(repository.findById(999L)).thenReturn(Optional.empty());
+    void createUserProfile_onGenericException_returns500() {
+        when(repo.save(any()))
+                .thenThrow(new RuntimeException("oops"));
 
-        Map<String, String> payload = Map.of("path", "city", "value", "UpdatedCity");
+        ResponseEntity<String> resp = service.createUserProfile(Map.of());
 
-        assertThrows(UserNotFoundException.class, () ->
-                service.updateUserProfile("999", payload));
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(resp.getBody())
+                .isEqualTo("An error occurred while creating a user profile. Double-check your request.");
+    }
+
+    //
+    // updateUserProfile(...)
+    //
+
+    @Test
+    void updateUserProfile_usernameChange_succeeds() {
+        when(repo.findByUsername("alice")).thenReturn(Optional.of(sampleUser));
+        ArgumentCaptor<UserProfile> captor = ArgumentCaptor.forClass(UserProfile.class);
+
+        Map<String,String> payload = Map.of("path","username", "value","bob");
+        ResponseEntity<?> resp = service.updateUserProfile("alice", payload);
+
+        verify(repo).saveAndFlush(captor.capture());
+        UserProfile saved = captor.getValue();
+        assertThat(saved.getUsername()).isEqualTo("bob");
+
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(resp.getBody()).isEqualTo("username updated for user: bob");
     }
 
     @Test
-    void updateUserProfile_invalidField_shouldThrowInvalidUpdateException() {
-        UserProfile user = TestData.provideUserProfiles().get(0);
-        when(repository.findById(1L)).thenReturn(Optional.of(user));
+    void updateUserProfile_nonexistent_throwsUserNotFound() {
+        when(repo.findByUsername("missing")).thenReturn(Optional.empty());
 
-        Map<String, String> payload = Map.of("path", "unknownField", "value", "oops");
-
-        assertThrows(InvalidUpdateException.class, () ->
-                service.updateUserProfile("1", payload));
-    }
-
-    // DELETE
-    @Test
-    void deleteUserProfile_validId_shouldDeleteSuccessfully() {
-        UserProfile user = TestData.provideUserProfiles().get(0);
-        when(repository.findById(1L)).thenReturn(Optional.of(user));
-        doNothing().when(repository).deleteById(1L);
-
-        ResponseEntity<?> response = service.deleteUserProfile("1");
-
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertThatThrownBy(() ->
+                service.updateUserProfile("missing", Map.of("path","city","value","X"))
+        ).isInstanceOf(UserNotFoundException.class);
     }
 
     @Test
-    void deleteUserProfile_invalidIdFormat_shouldReturnBadRequest() {
-        ResponseEntity<?> response = service.deleteUserProfile("banana");
+    void updateUserProfile_invalidField_throwsInvalidUpdate() {
+        when(repo.findByUsername("alice")).thenReturn(Optional.of(sampleUser));
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("User ID should be a numeric value.", response.getBody());
+        assertThatThrownBy(() ->
+                service.updateUserProfile("alice", Map.of("path","nope","value","X"))
+        ).isInstanceOf(InvalidUpdateException.class);
     }
 
     @Test
-    void deleteUserProfile_nonExistentUser_shouldThrowUserNotFoundException() {
-        when(repository.findById(999L)).thenReturn(Optional.empty());
+    void updateUserProfile_duplicateUsername_throwsUserAlreadyExists() {
+        when(repo.findByUsername("alice")).thenReturn(Optional.of(sampleUser));
+        doThrow(new DataIntegrityViolationException("dup"))
+                .when(repo).saveAndFlush(any());
 
-        assertThrows(UserNotFoundException.class, () ->
-                service.deleteUserProfile("999"));
+        assertThatThrownBy(() ->
+                service.updateUserProfile("alice", Map.of("path","username","value","carol"))
+        ).isInstanceOf(UserAlreadyExistsException.class);
     }
 
     @Test
-    void deleteUserProfile_exception_shouldReturnServerError() {
-        UserProfile user = TestData.provideUserProfiles().get(0);
-        when(repository.findById(1L)).thenReturn(Optional.of(user));
-        doThrow(new RuntimeException("DB error")).when(repository).deleteById(1L);
+    void updateUserProfile_onGenericException_returns500() {
+        when(repo.findByUsername("alice")).thenReturn(Optional.of(sampleUser));
+        doThrow(new RuntimeException("fail"))
+                .when(repo).saveAndFlush(any());
 
-        ResponseEntity<?> response = service.deleteUserProfile("1");
+        ResponseEntity<?> resp = service.updateUserProfile("alice",
+                Map.of("path","city","value","X"));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Server error occurred while deleting user profile.", response.getBody());
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(resp.getBody())
+                .isEqualTo("Server error occurred while updating user profile.");
+    }
+
+    //
+    // deleteUserProfile(...)
+    //
+
+    @Test
+    void deleteUserProfile_exists_returns204() {
+        when(repo.findByUsername("alice")).thenReturn(Optional.of(sampleUser));
+
+        ResponseEntity<?> resp = service.deleteUserProfile("alice");
+
+        verify(repo).delete(sampleUser);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(resp.getBody()).isNull();
+    }
+
+    @Test
+    void deleteUserProfile_missing_throwsUserNotFound() {
+        when(repo.findByUsername("alice")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.deleteUserProfile("alice"))
+                .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    void deleteUserProfile_onGenericException_returns500() {
+        when(repo.findByUsername("alice")).thenReturn(Optional.of(sampleUser));
+        doThrow(new RuntimeException("boom"))
+                .when(repo).delete(sampleUser);
+
+        ResponseEntity<?> resp = service.deleteUserProfile("alice");
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(resp.getBody())
+                .isEqualTo("Server error occurred while deleting user profile.");
     }
 }
