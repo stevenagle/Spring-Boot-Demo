@@ -6,6 +6,24 @@
 
 Project started using Spring Initializr; a blank-canvas, generic Spring Boot project slowly expanding into a full-fledged front and back-end app. None of this project has been copied in any way from another repo or user.
 
+*Back-end*
+
+Java 24 Spring Boot - attempting clean, minimalist design with robust testing
+
+JUnit 5, Mockito, full unit/integration testing
+
+Gradle since it's just objectively better (sorry Maven, you still hold a place in my heart)
+
+*Front-end*
+
+React 19, Vite, TypeScript
+
+*Instructions to Run*
+
+Until I get this thing cloud-hosted (EC2 here I come), you can clone the project and use ./gradlew bootRun to activate the back-end at localhost:8000 and then npm run dev for Vite at localhost:5173 to create the front. You may run into difficulties if you have special browser settings controlling caching. H2 DB should seed on bootRun with 10 default entries.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ### Goals
 
 The initial goal was to create a fully-functional Spring Boot API that I can hit locally with Postman. As tends to be the case, my ambitions grew and I'm adding a "real" React UI on top of it. I'm splitting the work with Copilot and experimenting a little along the way.
@@ -18,7 +36,6 @@ Constant iteration over features and functionality. Mostly TDD here, at least on
 
 ## In-progress:
 
-- Some more design/aesthetic improvements for our simplistic user profile front-end
 - Adding real front-end validation and error messaging
 - Expanding database from an in-memory H2 to H2 for testing and MySQL (or similar) for a "production" db
 - Replacing some custom validation with Spring validation
@@ -27,6 +44,8 @@ Constant iteration over features and functionality. Mostly TDD here, at least on
 
 
 ## Done
+
+✅ Add cookie functionality to simulate auth and session
 
 ✅ Full CRUD operation between front and back ends (achieved 08/11)
 
