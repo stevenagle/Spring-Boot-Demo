@@ -3,22 +3,64 @@ import './LoginPage.css';
 import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 
+interface LoginFormData {
+    username?: string;
+    password?: string;
+    emailAddress?: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+}
+interface HandleChangeEvent extends React.ChangeEvent<HTMLInputElement> { }
+
 const LoginPage = () => {
+
+    const API_URL = import.meta.env.VITE_API_URL;
     const [isCreatingUser, setIsCreatingUser] = useState(false);
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState<LoginFormData>({});
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setFormData(prev => ({
+    const handleChange = (e: HandleChangeEvent): void => {
+        setFormData((prev: LoginFormData) => ({
             ...prev,
             [e.target.name]: e.target.value
         }));
     };
 
-    const handleSubmit = (e) => {
+    const onLoginSuccess = (user: { username: string; }) => {
+        // Set a session cookie that expires in 1 hour
+        const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
+        document.cookie = `demoUser=${user.username}; expires=${expires}; path=/`;
+
+        navigate('/profile');
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
         if (isCreatingUser) {
-            // POST to create new user
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: isCreatingUser ? JSON.stringify(formData) : undefined
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Success:', data);
+                onLoginSuccess(data);
+
+            } catch (error) {
+                console.error('Error:', error);
+                // Optionally show error to user
+            }
         } else {
             // GET to log in existing user
         }
@@ -31,7 +73,7 @@ const LoginPage = () => {
                 <h2>User Portal</h2>
                 <form onSubmit={handleSubmit} className="login-form">
                     <input
-                        type="username"
+                        type="text"
                         name="username"
                         placeholder="Username"
                         onChange={handleChange}
@@ -55,7 +97,7 @@ const LoginPage = () => {
                         />
                             <input
                                 type="text"
-                                name="street"
+                                name="streetAddress"
                                 placeholder="Street Address"
                                 onChange={handleChange}
                                 required
