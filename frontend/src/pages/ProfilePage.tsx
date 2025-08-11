@@ -15,8 +15,9 @@ import {
     type UserProfile,
     type UpdateUserDto
 } from '../api/UserApi';
+import { deleteCookie } from '../utils/cookies';
 
-const UserHomePage: React.FC = () => {
+const ProfilePage: React.FC = () => {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [editedFields, setEditedFields] = useState<Partial<Record<keyof UserProfile, boolean>>>({});
     const [editingField, setEditingField] = useState<keyof UserProfile | null>(null);
@@ -40,8 +41,12 @@ const UserHomePage: React.FC = () => {
     };
 
     const handleLogout = () => {
-        clearCurrentUser();
         setModalMessage("You've been logged out.");
+        deleteCookie('demoUser');
+        clearCurrentUser();
+        setTimeout(() => {
+            navigate('/');
+        }, 5000);
     };
 
     // Enter edit mode for a specific field
@@ -215,4 +220,4 @@ const UserHomePage: React.FC = () => {
     );
 };
 
-export default UserHomePage;
+export default ProfilePage;
