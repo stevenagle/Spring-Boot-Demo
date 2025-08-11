@@ -130,86 +130,88 @@ const UserHomePage: React.FC = () => {
     const isEditing = (field: keyof UserProfile) => editingField === field;
 
     return (
-        <div className="user-home">
-            <h2>Welcome, {profile.username}</h2>
+        <>
             <Navbar />
+            <div className="user-home">
+                <h2>Welcome, {profile.username}</h2>
 
-            <div className="profile-section">
-                {editableFields.map(field => {
-                    const label = field.replace(/([A-Z])/g, ' $1').trim();
-                    const value = isEditing(field) ? editValue : String(profile[field] ?? '');
+                <div className="profile-section">
+                    {editableFields.map(field => {
+                        const label = field.replace(/([A-Z])/g, ' $1').trim();
+                        const value = isEditing(field) ? editValue : String(profile[field] ?? '');
 
-                    return (
-                        <div key={field} className={`profile-field ${isEditing(field) ? 'editing' : ''}`}>
-                            <label>{label}:</label>
+                        return (
+                            <div key={field} className={`profile-field ${isEditing(field) ? 'editing' : ''}`}>
+                                <label>{label}:</label>
 
-                            <input
-                                type="text"
-                                value={value}
-                                readOnly={!isEditing(field)}
-                                onChange={e => setEditValue(e.target.value)}
-                                className={isEditing(field) ? 'input-editable' : 'input-readonly'}
-                                aria-label={`${label} ${isEditing(field) ? 'editing' : 'read only'}`}
-                                autoFocus={isEditing(field)}
-                            />
+                                <input
+                                    type="text"
+                                    value={value}
+                                    readOnly={!isEditing(field)}
+                                    onChange={e => setEditValue(e.target.value)}
+                                    className={isEditing(field) ? 'input-editable' : 'input-readonly'}
+                                    aria-label={`${label} ${isEditing(field) ? 'editing' : 'read only'}`}
+                                    autoFocus={isEditing(field)}
+                                />
 
-                            {/* Action icons */}
-                            {!isEditing(field) ? (
-                                <button
-                                    className="icon-button"
-                                    aria-label={`Edit ${label}`}
-                                    onClick={() => startEditing(field)}
-                                    title={`Edit ${label}`}
-                                >
-                                    ✏️
-                                </button>
-                            ) : (
-                                <div className="inline-actions">
+                                {/* Action icons */}
+                                {!isEditing(field) ? (
                                     <button
                                         className="icon-button"
-                                        aria-label={`Save ${label}`}
-                                        onClick={saveEditing}
-                                        disabled={
-                                            editValue.trim() === String(profile[field] ?? '') ||
-                                            editValue.trim().length === 0
-                                        }
-                                        title="Save"
+                                        aria-label={`Edit ${label}`}
+                                        onClick={() => startEditing(field)}
+                                        title={`Edit ${label}`}
                                     >
-                                        ✅
+                                        ✏️
                                     </button>
-                                    <button
-                                        className="icon-button"
-                                        aria-label={`Cancel ${label} edit`}
-                                        onClick={cancelEditing}
-                                        title="Cancel"
-                                    >
-                                        ❌
-                                    </button>
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="inline-actions">
+                                        <button
+                                            className="icon-button"
+                                            aria-label={`Save ${label}`}
+                                            onClick={saveEditing}
+                                            disabled={
+                                                editValue.trim() === String(profile[field] ?? '') ||
+                                                editValue.trim().length === 0
+                                            }
+                                            title="Save"
+                                        >
+                                            ✅
+                                        </button>
+                                        <button
+                                            className="icon-button"
+                                            aria-label={`Cancel ${label} edit`}
+                                            onClick={cancelEditing}
+                                            title="Cancel"
+                                        >
+                                            ❌
+                                        </button>
+                                    </div>
+                                )}
 
-                            {editedFields[field] && (
-                                <span className="saved-indicator" aria-live="polite">
-                                    ✅ Saved!
-                                </span>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
+                                {editedFields[field] && (
+                                    <span className="saved-indicator" aria-live="polite">
+                                        ✅ Saved!
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
 
-            <div className="profile-actions-btns">
-                <button className="delete-button" onClick={handleDelete}>
-                    Delete User
-                </button>
-                <button className="logout-button" onClick={handleLogout}>
-                    Log Out
-                </button>
-                {modalMessage && (
-                    <Modal message={modalMessage} onConfirm={handleModalConfirm} />
-                )}
+                <div className="profile-actions-btns">
+                    <button className="delete-button" onClick={handleDelete}>
+                        Delete User
+                    </button>
+                    <button className="logout-button" onClick={handleLogout}>
+                        Log Out
+                    </button>
+                    {modalMessage && (
+                        <Modal message={modalMessage} onConfirm={handleModalConfirm} />
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

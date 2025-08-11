@@ -17,7 +17,7 @@ export interface UpdateUserDto {
 export interface CreateUserPayload
   extends Omit<UserProfile, 'id'> {}
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 async function handleResponse<T>(res: Response): Promise<T> {
   const text = await res.text();
