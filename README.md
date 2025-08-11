@@ -18,15 +18,19 @@ Constant iteration over features and functionality. Mostly TDD here, at least on
 
 ## In-progress:
 
-- Wiring the whole thing together
-- Some API refactors
-- Debating (and probably will end up doing) a database rework, using H2 only for testing and designing a MySQL schema for "production" (finger quotes)
-- Currently using custom validation, but that's only because if I wire in @Valid and enforce DTOs, I end up with a lot of exceptions that are hard to wrangle. MethodArgumentNotValidExceptions can't be caught by ControllerAdvice and don't provide meaningful feedback. Once the UI is finished, I can lean on front-end validation to block these at the form level and increase reliance on Spring back-end validations.
-- Multi-field PATCH updates.
+- Some more design/aesthetic improvements for our simplistic user profile front-end
+- Adding real front-end validation and error messaging
+- Expanding database from an in-memory H2 to H2 for testing and MySQL (or similar) for a "production" db
+- Replacing some custom validation with Spring validation
+- Backend DTO enforcemeent
+- Multi-field PATCH updates
 
 
 ## Done
-✅ React front-end Fake Company site with a mock login portal (merged in on 08/10, still wiring it up though)
+
+✅ Full CRUD operation between front and back ends (achieved 08/11)
+
+✅ React front-end Fake Company site with a mock login portal
 
 ✅ Added Swagger/OpenAPI tooling
 
