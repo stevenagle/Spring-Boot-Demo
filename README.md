@@ -22,7 +22,9 @@ React 19, Vite, TypeScript
 
 ### Goals
 
-The initial goal was to create a fully-functional Spring Boot API that I can hit locally with Postman. As tends to be the case, my ambitions grew and I'm adding a "real" React UI on top of it. I'm splitting the work with Copilot and experimenting a little along the way.
+The initial goal was to create a fully-functional Spring Boot API that I can hit locally with Postman. As tends to be the case, my ambitions grew and I added a React UI on top of it. The next major overhauls will be wiring in a "real" database and setting up an EC2 instance to host it.
+
+Anyone who comes across this repo and wants to use it as a reference for a standard API design is welcome to do so. Just realize it's not fully completed yet as of writing this on August 12th, 2025.
 
 ### Methodology
 
