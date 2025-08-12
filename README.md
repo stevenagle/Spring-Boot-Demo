@@ -18,10 +18,6 @@ Gradle since it's just objectively better (sorry Maven, you still hold a place i
 
 React 19, Vite, TypeScript
 
-*Instructions to Run*
-
-Until I get this thing cloud-hosted (EC2 here I come), you can clone the project and use ./gradlew bootRun to activate the back-end at localhost:8000 and then npm run dev for Vite at localhost:5173 to create the front. You may run into difficulties if you have special browser settings controlling caching. H2 DB should seed on bootRun with 10 default entries.
-
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Goals
