@@ -39,6 +39,7 @@ Constant iteration over features and functionality. Mostly TDD here, at least on
 - Replacing some custom validation with Spring validation
 - Backend DTO enforcemeent
 - Multi-field PATCH updates
+- Get this thing cloud-hosted and decide if I want to turn it into a real product
 
 
 ## Done
