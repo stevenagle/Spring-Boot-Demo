@@ -1,0 +1,225 @@
+.portal-layout {
+  display: grid;
+  grid-template-columns: 1.08fr 1fr;
+  max-width: 1360px;
+  min-height: 760px;
+  margin: 36px auto 50px;
+  padding: 0 32px;
+}
+.portal-story {
+  position: relative;
+  overflow: hidden;
+  padding: 58px 52px 26px;
+  background: #244b3e;
+  color: #f3f6e9;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.portal-story .eyebrow {
+  color: #d0dfbf;
+}
+.portal-story h1 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.8rem, 4.4vw, 4.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.05em;
+  margin: 32px 0 20px;
+}
+.portal-story h1 .accent {
+  color: #c5e49d;
+}
+.portal-story > p {
+  max-width: 330px;
+  color: #cfdbce;
+  font-size: 0.95rem;
+}
+.orbit-art {
+  height: 300px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 12px -20px;
+}
+.orbit {
+  position: absolute;
+  width: 300px;
+  height: 220px;
+  border: 1px solid #709378;
+  border-radius: 50%;
+  transform: rotate(-28deg);
+}
+.orbit-two {
+  transform: rotate(40deg);
+  width: 220px;
+  height: 290px;
+  border-color: #52765d;
+}
+.orbit-core {
+  display: grid;
+  place-content: center;
+  width: 132px;
+  height: 132px;
+  border-radius: 32px;
+  background: #c5e49d;
+  color: #244b3e;
+  font:
+    6rem Georgia,
+    serif;
+  box-shadow: 0 20px 70px #142f2a66;
+  transform: rotate(-8deg);
+}
+.orbit-core span {
+  position: absolute;
+  font-size: 3rem;
+  right: 15px;
+  bottom: 12px;
+}
+.orbit-tag {
+  position: absolute;
+  font-size: 0.7rem;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #52765d;
+  background: #2d5648;
+  box-shadow: 0 8px 20px #142f2a33;
+}
+.tag-top {
+  top: 25px;
+  right: 6%;
+  transform: rotate(7deg);
+}
+.tag-bottom {
+  bottom: 28px;
+  left: 4%;
+  transform: rotate(-5deg);
+}
+.story-footer {
+  margin-top: auto;
+  padding-top: 22px;
+  border-top: 1px solid #52765d;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 0.6rem;
+  letter-spacing: 0.07em;
+  color: #cedbc3;
+}
+.portal-form-panel {
+  padding: 60px 12% 32px;
+  align-self: center;
+}
+.form-heading h2 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 2.7rem;
+  letter-spacing: -0.04em;
+  margin: 16px 0 10px;
+}
+.form-heading > p {
+  font-size: 0.9rem;
+  color: #63766e;
+  margin-bottom: 28px;
+}
+.mode-switch {
+  display: flex;
+  background: #e9ede5;
+  border-radius: 9px;
+  padding: 4px;
+  margin-bottom: 30px;
+}
+.mode-switch button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  font-size: 0.8rem;
+}
+.mode-switch button[aria-pressed='true'] {
+  background: white;
+  box-shadow: 0 2px 5px #244b3e14;
+}
+.login-form > .primary-button {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px 18px;
+}
+.registration-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.field-emailAddress,
+.field-streetAddress {
+  grid-column: 1 / -1;
+}
+.demo-note {
+  margin-top: 26px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid #dce3d2;
+  border-radius: 10px;
+  background: #edf1e7;
+  font-size: 0.76rem;
+}
+.demo-note p {
+  color: #566b5f;
+  margin: 6px 0 0;
+}
+.sample-user {
+  padding: 0;
+  color: #244b3e;
+  border: 0;
+  background: transparent;
+  text-decoration: underline;
+  font-weight: 700;
+}
+.portal-footnote {
+  font-size: 0.65rem;
+  color: #687a6f;
+  text-align: center;
+  margin-top: 30px;
+}
+@media (max-width: 900px) {
+  .portal-layout {
+    grid-template-columns: 1fr 1fr;
+    padding: 0 20px;
+  }
+  .portal-story {
+    padding: 40px 28px 24px;
+  }
+  .portal-form-panel {
+    padding: 36px 24px;
+  }
+  .story-footer {
+    flex-direction: column;
+  }
+}
+@media (max-width: 680px) {
+  .portal-layout {
+    display: block;
+    margin-top: 20px;
+  }
+  .portal-story {
+    min-height: 300px;
+  }
+  .portal-story h1 {
+    font-size: 2.8rem;
+    max-width: 380px;
+  }
+  .orbit-art {
+    display: none;
+  }
+  .story-footer {
+    margin-top: 25px;
+    flex-direction: row;
+  }
+  .portal-form-panel {
+    padding: 38px 8px;
+  }
+}

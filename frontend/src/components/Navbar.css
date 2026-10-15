@@ -1,0 +1,57 @@
+.navbar {
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 5vw;
+  background: #f6f7f3;
+  border-bottom: 1px solid #e0e6dc;
+}
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-weight: 750;
+  font-size: 1.15rem;
+  letter-spacing: -0.04em;
+}
+.brand-mark {
+  background: #244b3e;
+  color: white;
+  width: 33px;
+  height: 33px;
+  border-radius: 9px;
+  text-align: center;
+  font-size: 1.4rem;
+}
+.brand-mark span {
+  color: #c5e49d;
+}
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  font-size: 0.83rem;
+}
+.navbar-links a {
+  padding: 6px 0;
+}
+.navbar-links a.active {
+  box-shadow: 0 2px #709449;
+}
+.logout-btn {
+  background: transparent;
+  font-size: 0.8rem;
+}
+@media (max-width: 600px) {
+  .navbar {
+    padding: 16px 20px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .navbar-links {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+}
